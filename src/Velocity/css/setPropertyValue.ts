@@ -21,10 +21,10 @@ export function setPropertyValue(element: HTMLorSVGElement, propertyName: string
 
   // FIX: value is translate3d(x,,) is not valid transform value
   let pValue  = propertyValue
-  if (propertyName === 'transform') {
+  if (propertyName === "transform") {
     const [, values = ''] = propertyValue.match(/translate3d\(([^\)]+)\)/) || []
     if (values) {
-      const [x = 0, y = 0, z = 0] = values.split(',')
+      const [x = 0, y = 0, z = 0] = values.split(",")
       pValue = `translate3d(${x || 0}, ${y || 0}, ${z || 0})`
     }
   }
