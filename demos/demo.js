@@ -1,5 +1,5 @@
 
-// window.Velocity.debug = 7
+window.Velocity.debug = 7
 const names = [
   'bounce',
   'flash',

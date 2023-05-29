@@ -3,8 +3,8 @@
 		"adjacent-overload-signatures": true,
 		"align": {
 			"options": [
-				"parameters",
-				"statements"
+				"parameters"
+				// "statements"
 			]
 		},
 		"array-type": {
@@ -33,7 +33,7 @@
 		"forin": true,
 		"import-spacing": true,
 		"indent": {
-			"options": ["tabs"]
+			// "options": ["tabs"]
 		},
 		"interface-name": false,
 		"interface-over-type-literal": true,
