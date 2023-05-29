@@ -49,6 +49,44 @@ var defineProperty = function (obj, key, value) {
   return obj;
 };
 
+var slicedToArray = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
+
 /**
  * Check if a variable is a boolean.
  */
@@ -199,6 +237,7 @@ function removeClass(element, className) {
         }
     }
 }
+//# sourceMappingURL=utility.js.map
 
 // Project
 // Constants
@@ -224,6 +263,7 @@ function registerAction(args, internal) {
     }
 }
 registerAction(["registerAction", registerAction], true);
+//# sourceMappingURL=actions.js.map
 
 /**
  * Without this it will only un-prefix properties that have a valid "normal"
@@ -251,6 +291,7 @@ var Duration = {
   normal: DURATION_NORMAL,
   slow: DURATION_SLOW
 };
+//# sourceMappingURL=constants.js.map
 
 // Project
 // Constants
@@ -296,6 +337,7 @@ function springEasing(percentComplete, startValue, endValue) {
 registerEasing(["linear", linearEasing]);
 registerEasing(["swing", swingEasing]);
 registerEasing(["spring", springEasing]);
+//# sourceMappingURL=easings.js.map
 
 // Project
 /**
@@ -461,6 +503,7 @@ registerEasing(["easeInOutExpo", generateBezier(1, 0, 0, 1)]);
 registerEasing(["easeInCirc", generateBezier(0.6, 0.04, 0.98, 0.335)]);
 registerEasing(["easeOutCirc", generateBezier(0.075, 0.82, 0.165, 1)]);
 registerEasing(["easeInOutCirc", generateBezier(0.785, 0.135, 0.15, 0.86)]);
+//# sourceMappingURL=bezier.js.map
 
 /* Runge-Kutta spring physics function generator. Adapted from Framer.js, copyright Koen Bok. MIT License: http://en.wikipedia.org/wiki/MIT_License */
 /* Given a tension, friction, and duration, a simulation at 60FPS will first run without a defined duration in order to calculate the full path. A second pass
@@ -540,6 +583,7 @@ function generateSpringRK4(tension, friction, duration) {
         return startValue + path[Math.floor(percentComplete * (path.length - 1))] * (endValue - startValue);
     };
 }
+//# sourceMappingURL=spring_rk4.js.map
 
 // Constants
 var cache = {};
@@ -558,6 +602,7 @@ function generateStep(steps) {
         return startValue + Math.round(percentComplete * steps) * (1 / steps) * (endValue - startValue);
     };
 }
+//# sourceMappingURL=step.js.map
 
 // Project
 /**
@@ -786,6 +831,7 @@ function validateSync(value) {
         console.error("VelocityJS: Trying to set 'sync' to an invalid value:", value);
     }
 }
+//# sourceMappingURL=options.js.map
 
 // Project
 // NOTE: Add the variable here, then add the default state in "reset" below.
@@ -1042,6 +1088,7 @@ var constructors = [];
  * name - saves expensive lookups.
  */
 var constructorCache = new Map();
+//# sourceMappingURL=normalizationsObject.js.map
 
 // Project
 // Constants
@@ -1083,6 +1130,7 @@ function Data(element) {
     });
     return newData;
 }
+//# sourceMappingURL=data.js.map
 
 // Constants
 var isClient = window && window === window.window,
@@ -1102,6 +1150,7 @@ var State = {
     last: undefined,
     firstNew: undefined
 };
+//# sourceMappingURL=state.js.map
 
 // Project
 /**
@@ -1216,107 +1265,27 @@ function freeAnimationCall(animation) {
         }
     }
 }
+//# sourceMappingURL=queue.js.map
 
-var SequencesObject = {};
-
-// Project
 /**
- * Call the complete method of an animation in a separate function so it can
- * benefit from JIT compiling while still having a try/catch block.
+ * Cache every camelCase match to avoid repeating lookups.
  */
-function callComplete(activeCall) {
-    var callback = activeCall.complete || activeCall.options.complete;
-    if (callback) {
-        try {
-            var elements = activeCall.elements;
-            callback.call(elements, elements, activeCall);
-        } catch (error) {
-            setTimeout(function () {
-                throw error;
-            }, 1);
-        }
-    }
-}
+var cache$2 = {};
 /**
- * Complete an animation. This might involve restarting (for loop or repeat
- * options). Once it is finished we also check for any callbacks or Promises
- * that need updating.
+ * Camelcase a property name into its JavaScript notation (e.g.
+ * "background-color" ==> "backgroundColor"). Camelcasing is used to
+ * normalize property names between and across calls.
  */
-function completeCall(activeCall) {
-    // TODO: Check if it's not been completed already
-    var options = activeCall.options,
-        queue = getValue(activeCall.queue, options.queue),
-        isLoop = getValue(activeCall.loop, options.loop, defaults$1.loop),
-        isRepeat = getValue(activeCall.repeat, options.repeat, defaults$1.repeat),
-        isStopped = activeCall._flags & 8 /* STOPPED */; // tslint:disable-line:no-bitwise
-    if (!isStopped && (isLoop || isRepeat)) {
-        ////////////////////
-        // Option: Loop   //
-        // Option: Repeat //
-        ////////////////////
-        if (isRepeat && isRepeat !== true) {
-            activeCall.repeat = isRepeat - 1;
-        } else if (isLoop && isLoop !== true) {
-            activeCall.loop = isLoop - 1;
-            activeCall.repeat = getValue(activeCall.repeatAgain, options.repeatAgain, defaults$1.repeatAgain);
-        }
-        if (isLoop) {
-            activeCall._flags ^= 64 /* REVERSE */; // tslint:disable-line:no-bitwise
-        }
-        if (queue !== false) {
-            // Can't be called when stopped so no need for an extra check.
-            Data(activeCall.element).lastFinishList[queue] = activeCall.timeStart + getValue(activeCall.duration, options.duration, defaults$1.duration);
-        }
-        activeCall.timeStart = activeCall.ellapsedTime = activeCall.percentComplete = 0;
-        activeCall._flags &= ~4 /* STARTED */; // tslint:disable-line:no-bitwise
-    } else {
-        var element = activeCall.element,
-            data = Data(element);
-        if (! --data.count && !isStopped) {
-            ////////////////////////
-            // Feature: Classname //
-            ////////////////////////
-            removeClass(element, State.className);
-        }
-        //////////////////////
-        // Option: Complete //
-        //////////////////////
-        // If this is the last animation in this list then we can check for
-        // and complete calls or Promises.
-        // TODO: When deleting an element we need to adjust these values.
-        if (options && ++options._completed === options._total) {
-            if (!isStopped && options.complete) {
-                // We don't call the complete if the animation is stopped,
-                // and we clear the key to prevent it being called again.
-                callComplete(activeCall);
-                options.complete = null;
-            }
-            var resolver = options._resolver;
-            if (resolver) {
-                // Fulfil the Promise
-                resolver(activeCall.elements);
-                delete options._resolver;
-            }
-        }
-        ///////////////////
-        // Option: Queue //
-        ///////////////////
-        if (queue !== false) {
-            // We only do clever things with queues...
-            if (!isStopped) {
-                // If we're not stopping an animation, we need to remember
-                // what time it finished so that the next animation in
-                // sequence gets the correct start time.
-                data.lastFinishList[queue] = activeCall.timeStart + getValue(activeCall.duration, options.duration, defaults$1.duration);
-            }
-            // Start the next animation in sequence, or delete the queue if
-            // this was the last one.
-            dequeue(element, queue);
-        }
-        // Cleanup any pointers, and remember the last animation etc.
-        freeAnimationCall(activeCall);
-    }
+function camelCase(property) {
+  var fixed = cache$2[property];
+  if (fixed) {
+    return fixed;
+  }
+  return cache$2[property] = property.replace(/-([a-z])/g, function ($, letter) {
+    return letter.toUpperCase();
+  });
 }
+//# sourceMappingURL=camelCase.js.map
 
 // Project
 /**
@@ -1433,76 +1402,10 @@ function getNormalization(element, propertyName) {
 }
 registerAction(["registerNormalization", registerNormalization]);
 registerAction(["hasNormalization", hasNormalization]);
+//# sourceMappingURL=normalizations.js.map
 
-// Project
-/**
- * The singular setPropertyValue, which routes the logic for all
- * normalizations.
- */
-function setPropertyValue(element, propertyName, propertyValue, fn) {
-    var noCache = NoCacheNormalizations.has(propertyName),
-        data = !noCache && Data(element);
-    if (noCache || data && data.cache[propertyName] !== propertyValue) {
-        // By setting it to undefined we force a true "get" later
-        if (!noCache) {
-            data.cache[propertyName] = propertyValue || undefined;
-        }
-        fn = fn || getNormalization(element, propertyName);
-        if (fn) {
-            fn(element, propertyValue);
-        }
-        if (Velocity$$1.debug >= 2) {
-            console.info("Set \"" + propertyName + "\": \"" + propertyValue + "\"", element);
-        }
-    }
-}
-
-/**
- * Remove nested `calc(0px + *)` or `calc(* + (0px + *))` correctly.
- */
-function removeNestedCalc(value) {
-    if (value.indexOf("calc(") >= 0) {
-        var tokens = value.split(/([\(\)])/);
-        var depth = 0;
-        for (var i = 0; i < tokens.length; i++) {
-            var token = tokens[i];
-            switch (token) {
-                case "(":
-                    depth++;
-                    break;
-                case ")":
-                    depth--;
-                    break;
-                default:
-                    if (depth && token[0] === "0") {
-                        tokens[i] = token.replace(/^0[a-z%]+ \+ /, "");
-                    }
-                    break;
-            }
-        }
-        return tokens.join("").replace(/(?:calc)?\(([0-9\.]+[a-z%]+)\)/g, "$1");
-    }
-    return value;
-}
-
-/**
- * Cache every camelCase match to avoid repeating lookups.
- */
-var cache$2 = {};
-/**
- * Camelcase a property name into its JavaScript notation (e.g.
- * "background-color" ==> "backgroundColor"). Camelcasing is used to
- * normalize property names between and across calls.
- */
-function camelCase(property) {
-  var fixed = cache$2[property];
-  if (fixed) {
-    return fixed;
-  }
-  return cache$2[property] = property.replace(/-([a-z])/g, function ($, letter) {
-    return letter.toUpperCase();
-  });
-}
+var SequencesObject = {};
+//# sourceMappingURL=sequencesObject.js.map
 
 // Constants
 var rxColor6 = /#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/gi,
@@ -1538,6 +1441,7 @@ function fixColors(str) {
         return "rgba(" + ($2.replace(rxSpaces, "") + ($1 ? "" : ",1")) + ")";
     });
 }
+//# sourceMappingURL=fixColors.js.map
 
 // Project
 /**
@@ -1583,6 +1487,51 @@ function augmentDimension(element, name, wantInner) {
         return wantInner ? -augment : augment;
     }
     return 0;
+}
+//# sourceMappingURL=augmentDimension.js.map
+
+// Project
+/**
+ * The singular setPropertyValue, which routes the logic for all
+ * normalizations.
+ */
+function setPropertyValue(element, propertyName, propertyValue, fn) {
+    // FIX: value is translate3d(x,,) is not valid transform value
+    var pValue = propertyValue;
+    if (propertyName === 'transform') {
+        var _ref = propertyValue.match(/translate3d\(([^\)]+)\)/) || [],
+            _ref2 = slicedToArray(_ref, 2),
+            _ref2$ = _ref2[1],
+            values = _ref2$ === undefined ? '' : _ref2$;
+
+        if (values) {
+            var _values$split = values.split(','),
+                _values$split2 = slicedToArray(_values$split, 3),
+                _values$split2$ = _values$split2[0],
+                x = _values$split2$ === undefined ? 0 : _values$split2$,
+                _values$split2$2 = _values$split2[1],
+                y = _values$split2$2 === undefined ? 0 : _values$split2$2,
+                _values$split2$3 = _values$split2[2],
+                z = _values$split2$3 === undefined ? 0 : _values$split2$3;
+
+            pValue = "translate3d(" + (x || 0) + ", " + (y || 0) + ", " + (z || 0) + ")";
+        }
+    }
+    var noCache = NoCacheNormalizations.has(propertyName),
+        data = !noCache && Data(element);
+    if (noCache || data && data.cache[propertyName] !== propertyValue) {
+        // By setting it to undefined we force a true "get" later
+        if (!noCache) {
+            data.cache[propertyName] = pValue || undefined;
+        }
+        fn = fn || getNormalization(element, propertyName);
+        if (fn) {
+            fn(element, pValue);
+        }
+        if (Velocity$1.debug >= 2) {
+            console.info("Set \"" + propertyName + "\": \"" + pValue + "\"", element);
+        }
+    }
 }
 
 // Project
@@ -1681,11 +1630,12 @@ function getPropertyValue(element, propertyName, fn, skipCache) {
             }
         }
     }
-    if (Velocity$$1.debug >= 2) {
+    if (Velocity$1.debug >= 2) {
         console.info("Get \"" + propertyName + "\": \"" + propertyValue + "\"", element);
     }
     return propertyValue;
 }
+//# sourceMappingURL=getPropertyValue.js.map
 
 // Project
 // Constants
@@ -1723,13 +1673,13 @@ function expandProperties(animation, properties) {
                 fn = getNormalization(element, propertyName);
             var valueData = properties[property];
             if (!fn && propertyName !== "tween") {
-                if (Velocity$$1.debug) {
+                if (Velocity$1.debug) {
                     console.log("Skipping \"" + property + "\" due to a lack of browser support.");
                 }
                 continue;
             }
             if (valueData == null) {
-                if (Velocity$$1.debug) {
+                if (Velocity$1.debug) {
                     console.log("Skipping \"" + property + "\" due to no value supplied.");
                 }
                 continue;
@@ -1996,7 +1946,7 @@ function explodeTween(propertyName, tween, duration, starting) {
         }), endValue], propertyName);
     }
     if (sequence) {
-        if (Velocity$$1.debug) {
+        if (Velocity$1.debug) {
             console.log("Velocity: Sequence found:", sequence);
         }
         sequence[0].percent = 0;
@@ -2043,12 +1993,388 @@ function validateTweens(activeCall) {
                 console.warn("bad type", tween, propertyName, startValue);
             }
         }
-        if (Velocity$$1.debug) {
+        if (Velocity$1.debug) {
             console.log("tweensContainer \"" + propertyName + "\": " + JSON.stringify(tween), element);
         }
     }
     activeCall._flags |= 1 /* EXPANDED */; // tslint:disable-line:no-bitwise
 }
+
+// Project
+var rxPercents = /(\d*\.\d+|\d+\.?|from|to)/g;
+function expandSequence(animation, sequence) {
+    var tweens = animation.tweens = Object.create(null),
+        element = animation.element;
+    for (var propertyName in sequence.tweens) {
+        if (sequence.tweens.hasOwnProperty(propertyName)) {
+            var fn = getNormalization(element, propertyName);
+            if (!fn && propertyName !== "tween") {
+                if (Velocity$1.debug) {
+                    console.log("Skipping [" + propertyName + "] due to a lack of browser support.");
+                }
+                continue;
+            }
+            tweens[propertyName] = {
+                fn: fn,
+                sequence: sequence.tweens[propertyName]
+            };
+        }
+    }
+}
+/**
+ * Used to register a sequence. This should never be called by users
+ * directly, instead it should be called via an action:<br/>
+ * <code>Velocity("registerSequence", ""name", VelocitySequence);</code>
+ */
+function registerSequence(args) {
+    if (isPlainObject(args[0])) {
+        for (var name in args[0]) {
+            if (args[0].hasOwnProperty(name)) {
+                registerSequence([name, args[0][name]]);
+            }
+        }
+    } else if (isString(args[0])) {
+        var _name = args[0],
+            sequence = args[1];
+        if (!isString(_name)) {
+            console.warn("VelocityJS: Trying to set 'registerSequence' name to an invalid value:", _name);
+        } else if (!isPlainObject(sequence)) {
+            console.warn("VelocityJS: Trying to set 'registerSequence' sequence to an invalid value:", _name, sequence);
+        } else {
+            if (SequencesObject[_name]) {
+                console.warn("VelocityJS: Replacing named sequence:", _name);
+            }
+            var percents = {},
+                steps = new Array(100),
+                properties = [],
+                sequenceList = SequencesObject[_name] = {},
+                duration = validateDuration(sequence.duration);
+            sequenceList.tweens = {};
+            if (isNumber(duration)) {
+                sequenceList.duration = duration;
+            }
+            for (var part in sequence) {
+                if (sequence.hasOwnProperty(part)) {
+                    var keys = String(part).match(rxPercents);
+                    if (keys) {
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var key = _step.value;
+
+                                var percent = key === "from" ? 0 : key === "to" ? 100 : parseFloat(key);
+                                if (percent < 0 || percent > 100) {
+                                    console.warn("VelocityJS: Trying to use an invalid value as a percentage (0 <= n <= 100):", _name, percent);
+                                } else if (isNaN(percent)) {
+                                    console.warn("VelocityJS: Trying to use an invalid number as a percentage:", _name, part, key);
+                                } else {
+                                    if (!percents[String(percent)]) {
+                                        percents[String(percent)] = [];
+                                    }
+                                    percents[String(percent)].push(part);
+                                    for (var property in sequence[part]) {
+                                        if (!properties.includes(property)) {
+                                            properties.push(property);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                    _iterator.return();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            var orderedPercents = Object.keys(percents).sort(function (a, b) {
+                var a1 = parseFloat(a),
+                    b1 = parseFloat(b);
+                return a1 > b1 ? 1 : a1 < b1 ? -1 : 0;
+            });
+            orderedPercents.forEach(function (key) {
+                steps.push.apply(percents[key]);
+            });
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = properties[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _property = _step2.value;
+
+                    var parts = [],
+                        propertyName = camelCase(_property);
+                    var _iteratorNormalCompletion3 = true;
+                    var _didIteratorError3 = false;
+                    var _iteratorError3 = undefined;
+
+                    try {
+                        for (var _iterator3 = orderedPercents[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                            var _key = _step3.value;
+                            var _iteratorNormalCompletion6 = true;
+                            var _didIteratorError6 = false;
+                            var _iteratorError6 = undefined;
+
+                            try {
+                                for (var _iterator6 = percents[_key][Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                    var _value = _step6.value;
+
+                                    var stepProperties = sequence[_value];
+                                    if (stepProperties[propertyName]) {
+                                        parts.push(isString(stepProperties[propertyName]) ? stepProperties[propertyName] : stepProperties[propertyName][0]);
+                                    }
+                                }
+                            } catch (err) {
+                                _didIteratorError6 = true;
+                                _iteratorError6 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                        _iterator6.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError6) {
+                                        throw _iteratorError6;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError3 = true;
+                        _iteratorError3 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                _iterator3.return();
+                            }
+                        } finally {
+                            if (_didIteratorError3) {
+                                throw _iteratorError3;
+                            }
+                        }
+                    }
+
+                    if (parts.length) {
+                        var realSequence = findPattern(parts, propertyName);
+                        var index = 0;
+                        if (realSequence) {
+                            var _iteratorNormalCompletion4 = true;
+                            var _didIteratorError4 = false;
+                            var _iteratorError4 = undefined;
+
+                            try {
+                                for (var _iterator4 = orderedPercents[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                    var _key2 = _step4.value;
+                                    var _iteratorNormalCompletion5 = true;
+                                    var _didIteratorError5 = false;
+                                    var _iteratorError5 = undefined;
+
+                                    try {
+                                        for (var _iterator5 = percents[_key2][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                            var value = _step5.value;
+
+                                            var originalProperty = sequence[value][propertyName];
+                                            if (originalProperty) {
+                                                if (Array.isArray(originalProperty) && originalProperty.length > 1 && (isString(originalProperty[1]) || Array.isArray(originalProperty[1]))) {
+                                                    realSequence[index].easing = validateEasing(originalProperty[1], sequenceList.duration || DEFAULT_DURATION);
+                                                }
+                                                realSequence[index++].percent = parseFloat(_key2) / 100;
+                                            }
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError5 = true;
+                                        _iteratorError5 = err;
+                                    } finally {
+                                        try {
+                                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                                _iterator5.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError5) {
+                                                throw _iteratorError5;
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (err) {
+                                _didIteratorError4 = true;
+                                _iteratorError4 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                        _iterator4.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError4) {
+                                        throw _iteratorError4;
+                                    }
+                                }
+                            }
+
+                            sequenceList.tweens[propertyName] = realSequence;
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+        }
+    }
+}
+registerAction(["registerSequence", registerSequence], true);
+
+// Project
+/**
+ * Call the complete method of an animation in a separate function so it can
+ * benefit from JIT compiling while still having a try/catch block.
+ */
+function callComplete(activeCall) {
+    var callback = activeCall.complete || activeCall.options.complete;
+    if (callback) {
+        try {
+            var elements = activeCall.elements;
+            callback.call(elements, elements, activeCall);
+        } catch (error) {
+            setTimeout(function () {
+                throw error;
+            }, 1);
+        }
+    }
+}
+/**
+ * Complete an animation. This might involve restarting (for loop or repeat
+ * options). Once it is finished we also check for any callbacks or Promises
+ * that need updating.
+ */
+function completeCall(activeCall) {
+    // TODO: Check if it's not been completed already
+    var options = activeCall.options,
+        queue = getValue(activeCall.queue, options.queue),
+        isLoop = getValue(activeCall.loop, options.loop, defaults$1.loop),
+        isRepeat = getValue(activeCall.repeat, options.repeat, defaults$1.repeat),
+        isStopped = activeCall._flags & 8 /* STOPPED */; // tslint:disable-line:no-bitwise
+    if (!isStopped && (isLoop || isRepeat)) {
+        ////////////////////
+        // Option: Loop   //
+        // Option: Repeat //
+        ////////////////////
+        if (isRepeat && isRepeat !== true) {
+            activeCall.repeat = isRepeat - 1;
+        } else if (isLoop && isLoop !== true) {
+            activeCall.loop = isLoop - 1;
+            activeCall.repeat = getValue(activeCall.repeatAgain, options.repeatAgain, defaults$1.repeatAgain);
+        }
+        if (isLoop) {
+            activeCall._flags ^= 64 /* REVERSE */; // tslint:disable-line:no-bitwise
+        }
+        if (queue !== false) {
+            // Can't be called when stopped so no need for an extra check.
+            Data(activeCall.element).lastFinishList[queue] = activeCall.timeStart + getValue(activeCall.duration, options.duration, defaults$1.duration);
+        }
+        activeCall.timeStart = activeCall.ellapsedTime = activeCall.percentComplete = 0;
+        activeCall._flags &= ~4 /* STARTED */; // tslint:disable-line:no-bitwise
+    } else {
+        var element = activeCall.element,
+            data = Data(element);
+        if (! --data.count && !isStopped) {
+            ////////////////////////
+            // Feature: Classname //
+            ////////////////////////
+            removeClass(element, State.className);
+        }
+        //////////////////////
+        // Option: Complete //
+        //////////////////////
+        // If this is the last animation in this list then we can check for
+        // and complete calls or Promises.
+        // TODO: When deleting an element we need to adjust these values.
+        if (options && ++options._completed === options._total) {
+            if (!isStopped && options.complete) {
+                // We don't call the complete if the animation is stopped,
+                // and we clear the key to prevent it being called again.
+                callComplete(activeCall);
+                options.complete = null;
+            }
+            var resolver = options._resolver;
+            if (resolver) {
+                // Fulfil the Promise
+                resolver(activeCall.elements);
+                delete options._resolver;
+            }
+        }
+        ///////////////////
+        // Option: Queue //
+        ///////////////////
+        if (queue !== false) {
+            // We only do clever things with queues...
+            if (!isStopped) {
+                // If we're not stopping an animation, we need to remember
+                // what time it finished so that the next animation in
+                // sequence gets the correct start time.
+                data.lastFinishList[queue] = activeCall.timeStart + getValue(activeCall.duration, options.duration, defaults$1.duration);
+            }
+            // Start the next animation in sequence, or delete the queue if
+            // this was the last one.
+            dequeue(element, queue);
+        }
+        // Cleanup any pointers, and remember the last animation etc.
+        freeAnimationCall(activeCall);
+    }
+}
+//# sourceMappingURL=complete.js.map
+
+/**
+ * Remove nested `calc(0px + *)` or `calc(* + (0px + *))` correctly.
+ */
+function removeNestedCalc(value) {
+    if (value.indexOf("calc(") >= 0) {
+        var tokens = value.split(/([\(\)])/);
+        var depth = 0;
+        for (var i = 0; i < tokens.length; i++) {
+            var token = tokens[i];
+            switch (token) {
+                case "(":
+                    depth++;
+                    break;
+                case ")":
+                    depth--;
+                    break;
+                default:
+                    if (depth && token[0] === "0") {
+                        tokens[i] = token.replace(/^0[a-z%]+ \+ /, "");
+                    }
+                    break;
+            }
+        }
+        return tokens.join("").replace(/(?:calc)?\(([0-9\.]+[a-z%]+)\)/g, "$1");
+    }
+    return value;
+}
+//# sourceMappingURL=removeNestedCalc.js.map
 
 // Project
 /**
@@ -2396,7 +2722,7 @@ function tick(timestamp) {
                 var activeEasing = activeCall.easing != null ? activeCall.easing : _options.easing != null ? _options.easing : defaultEasing,
                     millisecondsEllapsed = activeCall.ellapsedTime = timeCurrent - _timeStart,
                     duration = activeCall.duration != null ? activeCall.duration : _options.duration != null ? _options.duration : defaultDuration,
-                    percentComplete = activeCall.percentComplete = Velocity$$1.mock ? 1 : Math.min(millisecondsEllapsed / duration, 1),
+                    percentComplete = activeCall.percentComplete = Velocity$1.mock ? 1 : Math.min(millisecondsEllapsed / duration, 1),
                     tweens = activeCall.tweens,
                     reverse = _flags & 64 /* REVERSE */; // tslint:disable-line:no-bitwise
                 if (activeCall.progress || _options._first === activeCall && _options.progress) {
@@ -2489,1793 +2815,7 @@ function tick(timestamp) {
     }
     ticking = false;
 }
-
-// Project
-/**
- * Check if an animation should be finished, and if so we set the tweens to
- * the final value for it, then call complete.
- */
-function checkAnimationShouldBeFinished(animation, queueName, defaultQueue) {
-    validateTweens(animation);
-    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
-        if (!(animation._flags & 4 /* STARTED */)) {
-            // tslint:disable-line:no-bitwise
-            // Copied from tick.ts - ensure that the animation is completely
-            // valid and run begin() before complete().
-            var options = animation.options;
-            // The begin callback is fired once per call, not once per
-            // element, and is passed the full raw DOM element set as both
-            // its context and its first argument.
-            if (options._started++ === 0) {
-                options._first = animation;
-                if (options.begin) {
-                    // Pass to an external fn with a try/catch block for optimisation
-                    beginCall(animation);
-                    // Only called once, even if reversed or repeated
-                    options.begin = undefined;
-                }
-            }
-            animation._flags |= 4 /* STARTED */; // tslint:disable-line:no-bitwise
-        }
-        // tslint:disable-next-line:forin
-        for (var property in animation.tweens) {
-            var tween = animation.tweens[property],
-                sequence = tween.sequence,
-                pattern = sequence.pattern;
-            var currentValue = "",
-                i = 0;
-            if (pattern) {
-                var endValues = sequence[sequence.length - 1];
-                for (; i < pattern.length; i++) {
-                    var endValue = endValues[i];
-                    currentValue += endValue == null ? pattern[i] : endValue;
-                }
-            }
-            setPropertyValue(animation.element, property, currentValue, tween.fn);
-        }
-        completeCall(animation);
-    }
-}
-/**
- * When the finish action is triggered, the elements' currently active call is
- * immediately finished. When an element is finished, the next item in its
- * animation queue is immediately triggered. If passed via a chained call
- * then this will only target the animations in that call, and not the
- * elements linked to it.
- *
- * A queue name may be passed in to specify that only animations on the
- * named queue are finished. The default queue is named "". In addition the
- * value of `false` is allowed for the queue name.
- *
- * An final argument may be passed in to clear an element's remaining queued
- * calls. This may only be the value `true`.
- */
-function finish(args, elements, promiseHandler) {
-    var queueName = validateQueue(args[0], true),
-        defaultQueue = defaults$1.queue,
-        finishAll = args[queueName === undefined ? 0 : 1] === true;
-    if (isVelocityResult(elements) && elements.velocity.animations) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var animation = _step.value;
-
-                checkAnimationShouldBeFinished(animation, queueName, defaultQueue);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-    } else {
-        while (State.firstNew) {
-            validateTweens(State.firstNew);
-        }
-        for (var activeCall = State.first, nextCall; activeCall && (finishAll || activeCall !== State.firstNew); activeCall = nextCall || State.firstNew) {
-            nextCall = activeCall._next;
-            if (!elements || elements.includes(activeCall.element)) {
-                checkAnimationShouldBeFinished(activeCall, queueName, defaultQueue);
-            }
-        }
-    }
-    if (promiseHandler) {
-        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
-            elements.then(promiseHandler._resolver);
-        } else {
-            promiseHandler._resolver(elements);
-        }
-    }
-}
-registerAction(["finish", finish], true);
-
-/**
- * Used to map getters for the various AnimationFlags.
- */
-var animationFlags = {
-    isExpanded: 1 /* EXPANDED */
-    , isReady: 2 /* READY */
-    , isStarted: 4 /* STARTED */
-    , isStopped: 8 /* STOPPED */
-    , isPaused: 16 /* PAUSED */
-    , isSync: 32 /* SYNC */
-    , isReverse: 64 /* REVERSE */
-};
-/**
- * Get or set an option or running AnimationCall data value. If there is no
- * value passed then it will get, otherwise we will set.
- *
- * NOTE: When using "get" this will not touch the Promise as it is never
- * returned to the user.
- */
-function option(args, elements, promiseHandler, action) {
-    var key = args[0],
-        queue = action.indexOf(".") >= 0 ? action.replace(/^.*\./, "") : undefined,
-        queueName = queue === "false" ? false : validateQueue(queue, true);
-    var animations = void 0,
-        value = args[1];
-    if (!key) {
-        console.warn("VelocityJS: Cannot access a non-existant key!");
-        return null;
-    }
-    // If we're chaining the return value from Velocity then we are only
-    // interested in the values related to that call
-    if (isVelocityResult(elements) && elements.velocity.animations) {
-        animations = elements.velocity.animations;
-    } else {
-        animations = [];
-        for (var activeCall = State.first; activeCall; activeCall = activeCall._next) {
-            if (elements.indexOf(activeCall.element) >= 0 && getValue(activeCall.queue, activeCall.options.queue) === queueName) {
-                animations.push(activeCall);
-            }
-        }
-        // If we're dealing with multiple elements that are pointing at a
-        // single running animation, then instead treat them as a single
-        // animation.
-        if (elements.length > 1 && animations.length > 1) {
-            var i = 1,
-                options = animations[0].options;
-            while (i < animations.length) {
-                if (animations[i++].options !== options) {
-                    options = null;
-                    break;
-                }
-            }
-            // TODO: this needs to check that they're actually a sync:true animation to merge the results, otherwise the individual values may be different
-            if (options) {
-                animations = [animations[0]];
-            }
-        }
-    }
-    // GET
-    if (value === undefined) {
-        var result = [],
-            flag = animationFlags[key];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var animation = _step.value;
-
-                if (flag === undefined) {
-                    // A normal key to get.
-                    result.push(getValue(animation[key], animation.options[key]));
-                } else {
-                    // A flag that we're checking against.
-                    result.push((animation._flags & flag) === 0); // tslint:disable-line:no-bitwise
-                }
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-
-        if (elements.length === 1 && animations.length === 1) {
-            // If only a single animation is found and we're only targetting a
-            // single element, then return the value directly
-            return result[0];
-        }
-        return result;
-    }
-    // SET
-    var isPercentComplete = void 0;
-    switch (key) {
-        case "cache":
-            value = validateCache(value);
-            break;
-        case "begin":
-            value = validateBegin(value);
-            break;
-        case "complete":
-            value = validateComplete(value);
-            break;
-        case "delay":
-            value = validateDelay(value);
-            break;
-        case "duration":
-            value = validateDuration(value);
-            break;
-        case "fpsLimit":
-            value = validateFpsLimit(value);
-            break;
-        case "loop":
-            value = validateLoop(value);
-            break;
-        case "percentComplete":
-            isPercentComplete = true;
-            value = parseFloat(value);
-            break;
-        case "repeat":
-        case "repeatAgain":
-            value = validateRepeat(value);
-            break;
-        default:
-            if (key[0] !== "_") {
-                var num = parseFloat(value);
-                if (value === String(num)) {
-                    value = num;
-                }
-                break;
-            }
-        // deliberate fallthrough
-        case "queue":
-        case "promise":
-        case "promiseRejectEmpty":
-        case "easing":
-        case "started":
-            console.warn("VelocityJS: Trying to set a read-only key:", key);
-            return;
-    }
-    if (value === undefined || value !== value) {
-        console.warn("VelocityJS: Trying to set an invalid value:" + key + "=" + value + " (" + args[1] + ")");
-        return null;
-    }
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-        for (var _iterator2 = animations[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var _animation = _step2.value;
-
-            if (isPercentComplete) {
-                _animation.timeStart = lastTick - getValue(_animation.duration, _animation.options.duration, defaults$1.duration) * value;
-            } else {
-                _animation[key] = value;
-            }
-        }
-    } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
-            }
-        } finally {
-            if (_didIteratorError2) {
-                throw _iteratorError2;
-            }
-        }
-    }
-
-    if (promiseHandler) {
-        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
-            elements.then(promiseHandler._resolver);
-        } else {
-            promiseHandler._resolver(elements);
-        }
-    }
-}
-registerAction(["option", option], true);
-
-// Project
-/**
- * Check if an animation should be paused / resumed.
- */
-function checkAnimation(animation, queueName, defaultQueue, isPaused) {
-    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
-        if (isPaused) {
-            animation._flags |= 16 /* PAUSED */; // tslint:disable-line:no-bitwise
-        } else {
-            animation._flags &= ~16 /* PAUSED */; // tslint:disable-line:no-bitwise
-        }
-    }
-}
-/**
- * Pause and Resume are call-wide (not on a per element basis). Thus, calling pause or resume on a
- * single element will cause any calls that contain tweens for that element to be paused/resumed
- * as well.
- */
-function pauseResume(args, elements, promiseHandler, action) {
-    var isPaused = action.indexOf("pause") === 0,
-        queue = action.indexOf(".") >= 0 ? action.replace(/^.*\./, "") : undefined,
-        queueName = queue === "false" ? false : validateQueue(args[0]),
-        defaultQueue = defaults$1.queue;
-    if (isVelocityResult(elements) && elements.velocity.animations) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var animation = _step.value;
-
-                checkAnimation(animation, queueName, defaultQueue, isPaused);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-    } else {
-        var activeCall = State.first;
-        while (activeCall) {
-            if (!elements || elements.includes(activeCall.element)) {
-                checkAnimation(activeCall, queueName, defaultQueue, isPaused);
-            }
-            activeCall = activeCall._next;
-        }
-    }
-    if (promiseHandler) {
-        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
-            elements.then(promiseHandler._resolver);
-        } else {
-            promiseHandler._resolver(elements);
-        }
-    }
-}
-registerAction(["pause", pauseResume], true);
-registerAction(["resume", pauseResume], true);
-
-// Project
-/**
- * Get or set a style of Nomralised property value on one or more elements.
- * If there is no value passed then it will get, otherwise we will set.
- *
- * NOTE: When using "get" this will not touch the Promise as it is never
- * returned to the user.
- *
- * This can fail to set, and will reject the Promise if it does so.
- *
- * Velocity(elements, "style", "property", "value") => elements;
- * Velocity(elements, "style", {"property": "value", ...}) => elements;
- * Velocity(element, "style", "property") => "value";
- * Velocity(elements, "style", "property") => ["value", ...];
- */
-function propertyAction(args, elements, promiseHandler, action) {
-    var property = args[0],
-        value = args[1];
-    if (!property) {
-        console.warn("VelocityJS: Cannot access a non-existant property!");
-        return null;
-    }
-    // GET
-    if (value === undefined && !isPlainObject(property)) {
-        if (Array.isArray(property)) {
-            if (elements.length === 1) {
-                var result = {};
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
-
-                try {
-                    for (var _iterator = property[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var prop = _step.value;
-
-                        result[prop] = fixColors(getPropertyValue(elements[0], prop));
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-
-                return result;
-            } else {
-                var _result = [];
-                var _iteratorNormalCompletion2 = true;
-                var _didIteratorError2 = false;
-                var _iteratorError2 = undefined;
-
-                try {
-                    for (var _iterator2 = elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                        var element = _step2.value;
-
-                        var res = {};
-                        var _iteratorNormalCompletion3 = true;
-                        var _didIteratorError3 = false;
-                        var _iteratorError3 = undefined;
-
-                        try {
-                            for (var _iterator3 = property[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                                var _prop = _step3.value;
-
-                                res[_prop] = fixColors(getPropertyValue(element, _prop));
-                            }
-                        } catch (err) {
-                            _didIteratorError3 = true;
-                            _iteratorError3 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                    _iterator3.return();
-                                }
-                            } finally {
-                                if (_didIteratorError3) {
-                                    throw _iteratorError3;
-                                }
-                            }
-                        }
-
-                        _result.push(res);
-                    }
-                } catch (err) {
-                    _didIteratorError2 = true;
-                    _iteratorError2 = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                            _iterator2.return();
-                        }
-                    } finally {
-                        if (_didIteratorError2) {
-                            throw _iteratorError2;
-                        }
-                    }
-                }
-
-                return _result;
-            }
-        } else {
-            // If only a single animation is found and we're only targetting a
-            // single element, then return the value directly
-            if (elements.length === 1) {
-                return fixColors(getPropertyValue(elements[0], property));
-            }
-            var _result2 = [];
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = elements[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var _element = _step4.value;
-
-                    _result2.push(fixColors(getPropertyValue(_element, property)));
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
-
-            return _result2;
-        }
-    }
-    // SET
-    var error = [];
-    if (isPlainObject(property)) {
-        for (var propertyName in property) {
-            if (property.hasOwnProperty(propertyName)) {
-                var _iteratorNormalCompletion5 = true;
-                var _didIteratorError5 = false;
-                var _iteratorError5 = undefined;
-
-                try {
-                    for (var _iterator5 = elements[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                        var _element2 = _step5.value;
-
-                        var propertyValue = property[propertyName];
-                        if (isString(propertyValue) || isNumber(propertyValue)) {
-                            setPropertyValue(_element2, propertyName, property[propertyName]);
-                        } else {
-                            error.push("Cannot set a property \"" + propertyName + "\" to an unknown type: " + (typeof propertyValue === "undefined" ? "undefined" : _typeof(propertyValue)));
-                            console.warn("VelocityJS: Cannot set a property \"" + propertyName + "\" to an unknown type:", propertyValue);
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError5 = true;
-                    _iteratorError5 = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                            _iterator5.return();
-                        }
-                    } finally {
-                        if (_didIteratorError5) {
-                            throw _iteratorError5;
-                        }
-                    }
-                }
-            }
-        }
-    } else if (isString(value) || isNumber(value)) {
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
-
-        try {
-            for (var _iterator6 = elements[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                var _element3 = _step6.value;
-
-                setPropertyValue(_element3, property, String(value));
-            }
-        } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                    _iterator6.return();
-                }
-            } finally {
-                if (_didIteratorError6) {
-                    throw _iteratorError6;
-                }
-            }
-        }
-    } else {
-        error.push("Cannot set a property \"" + property + "\" to an unknown type: " + (typeof value === "undefined" ? "undefined" : _typeof(value)));
-        console.warn("VelocityJS: Cannot set a property \"" + property + "\" to an unknown type:", value);
-    }
-    if (promiseHandler) {
-        if (error.length) {
-            promiseHandler._rejecter(error.join(", "));
-        } else if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
-            elements.then(promiseHandler._resolver);
-        } else {
-            promiseHandler._resolver(elements);
-        }
-    }
-}
-registerAction(["property", propertyAction], true);
-
-// Project
-registerAction(["reverse", function (args, elements, promiseHandler, action) {
-        // NOTE: Code needs to split out before here - but this is needed to prevent it being overridden
-        throw new SyntaxError("VelocityJS: The 'reverse' action is built in and private.");
-}], true);
-
-// Project
-/**
- * Check if an animation should be stopped, and if so then set the STOPPED
- * flag on it, then call complete.
- */
-function checkAnimationShouldBeStopped(animation, queueName, defaultQueue) {
-    validateTweens(animation);
-    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
-        animation._flags |= 8 /* STOPPED */; // tslint:disable-line:no-bitwise
-        completeCall(animation);
-    }
-}
-/**
- * When the stop action is triggered, the elements' currently active call is
- * immediately stopped. When an element is stopped, the next item in its
- * animation queue is immediately triggered. If passed via a chained call
- * then this will only target the animations in that call, and not the
- * elements linked to it.
- *
- * A queue name may be passed in to specify that only animations on the
- * named queue are stopped. The default queue is named "". In addition the
- * value of `false` is allowed for the queue name.
- *
- * An final argument may be passed in to clear an element's remaining queued
- * calls. This may only be the value `true`.
- *
- * Note: The stop command runs prior to Velocity's Queueing phase since its
- * behavior is intended to take effect *immediately*, regardless of the
- * element's current queue state.
- */
-function stop(args, elements, promiseHandler, action) {
-    var queueName = validateQueue(args[0], true),
-        defaultQueue = defaults$1.queue,
-        finishAll = args[queueName === undefined ? 0 : 1] === true;
-    if (isVelocityResult(elements) && elements.velocity.animations) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var animation = _step.value;
-
-                checkAnimationShouldBeStopped(animation, queueName, defaultQueue);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-    } else {
-        while (State.firstNew) {
-            validateTweens(State.firstNew);
-        }
-        for (var activeCall = State.first, nextCall; activeCall && (finishAll || activeCall !== State.firstNew); activeCall = nextCall || State.firstNew) {
-            nextCall = activeCall._next;
-            if (!elements || elements.includes(activeCall.element)) {
-                checkAnimationShouldBeStopped(activeCall, queueName, defaultQueue);
-            }
-        }
-    }
-    if (promiseHandler) {
-        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
-            elements.then(promiseHandler._resolver);
-        } else {
-            promiseHandler._resolver(elements);
-        }
-    }
-}
-registerAction(["stop", stop], true);
-
-// Project
-registerAction(["style", propertyAction], true);
-
-// Project
-/**
- *
- */
-function tweenAction(args, elements, promiseHandler, action) {
-    var requireForcefeeding = void 0;
-    if (!elements) {
-        if (!args.length) {
-            console.info("Velocity(<element>, \"tween\", percentComplete, property, end | [end, <easing>, <start>], <easing>) => value\nVelocity(<element>, \"tween\", percentComplete, {property: end | [end, <easing>, <start>], ...}, <easing>) => {property: value, ...}");
-            return null;
-        }
-        elements = [document.body];
-        requireForcefeeding = true;
-    } else if (elements.length !== 1) {
-        // TODO: Allow more than a single element to return an array of results
-        throw new Error("VelocityJS: Cannot tween more than one element!");
-    }
-    var percentComplete = args[0],
-        fakeAnimation = {
-        elements: elements,
-        element: elements[0],
-        queue: false,
-        options: {
-            duration: 1000
-        },
-        tweens: null
-    },
-        result = {};
-    var properties = args[1],
-        singleResult = void 0,
-        maybeSequence = void 0,
-        easing = args[2],
-        count = 0;
-    if (isString(args[1])) {
-        if (SequencesObject && SequencesObject[args[1]]) {
-            maybeSequence = SequencesObject[args[1]];
-            properties = {};
-            easing = args[2];
-        } else {
-            singleResult = true;
-            properties = defineProperty({}, args[1], args[2]);
-            easing = args[3];
-        }
-    } else if (Array.isArray(args[1])) {
-        singleResult = true;
-        properties = {
-            tween: args[1]
-        };
-        easing = args[2];
-    }
-    if (!isNumber(percentComplete) || percentComplete < 0 || percentComplete > 1) {
-        throw new Error("VelocityJS: Must tween a percentage from 0 to 1!");
-    }
-    if (!isPlainObject(properties)) {
-        throw new Error("VelocityJS: Cannot tween an invalid property!");
-    }
-    if (requireForcefeeding) {
-        for (var property in properties) {
-            if (properties.hasOwnProperty(property) && (!Array.isArray(properties[property]) || properties[property].length < 2)) {
-                throw new Error("VelocityJS: When not supplying an element you must force-feed values: " + property);
-            }
-        }
-    }
-    var activeEasing = validateEasing(getValue(easing, defaults$1.easing), DEFAULT_DURATION);
-    if (maybeSequence) {
-        expandSequence(fakeAnimation, maybeSequence);
-    } else {
-        expandProperties(fakeAnimation, properties);
-    }
-    // tslint:disable-next-line:forin
-    for (var _property in fakeAnimation.tweens) {
-        // For every element, iterate through each property.
-        var propertyTween = fakeAnimation.tweens[_property],
-            sequence = propertyTween.sequence,
-            pattern = sequence.pattern;
-        var currentValue = "",
-            i = 0;
-        count++;
-        if (pattern) {
-            var easingComplete = (propertyTween.easing || activeEasing)(percentComplete, 0, 1, _property);
-            var best = 0;
-            for (var j = 0; j < sequence.length - 1; j++) {
-                if (sequence[j].percent < easingComplete) {
-                    best = j;
-                }
-            }
-            var tweenFrom = sequence[best],
-                tweenTo = sequence[best + 1] || tweenFrom,
-                tweenPercent = (percentComplete - tweenFrom.percent) / (tweenTo.percent - tweenFrom.percent),
-                tweenEasing = tweenTo.easing || linearEasing;
-            for (; i < pattern.length; i++) {
-                var startValue = tweenFrom[i];
-                if (startValue == null) {
-                    currentValue += pattern[i];
-                } else {
-                    var endValue = tweenTo[i];
-                    if (startValue === endValue) {
-                        currentValue += startValue;
-                    } else {
-                        // All easings must deal with numbers except for our internal ones.
-                        var value = tweenEasing(tweenPercent, startValue, endValue, _property);
-                        currentValue += pattern[i] === true ? Math.round(value) : value;
-                    }
-                }
-            }
-            result[_property] = currentValue;
-        }
-    }
-    if (singleResult && count === 1) {
-        for (var _property2 in result) {
-            if (result.hasOwnProperty(_property2)) {
-                return result[_property2];
-            }
-        }
-    }
-    return result;
-}
-registerAction(["tween", tweenAction], true);
-
-// Project
-/**
- * Converting from hex as it makes for a smaller file.
- */
-var colorValues = {
-    aliceblue: 0xF0F8FF,
-    antiquewhite: 0xFAEBD7,
-    aqua: 0x00FFFF,
-    aquamarine: 0x7FFFD4,
-    azure: 0xF0FFFF,
-    beige: 0xF5F5DC,
-    bisque: 0xFFE4C4,
-    black: 0x000000,
-    blanchedalmond: 0xFFEBCD,
-    blue: 0x0000FF,
-    blueviolet: 0x8A2BE2,
-    brown: 0xA52A2A,
-    burlywood: 0xDEB887,
-    cadetblue: 0x5F9EA0,
-    chartreuse: 0x7FFF00,
-    chocolate: 0xD2691E,
-    coral: 0xFF7F50,
-    cornflowerblue: 0x6495ED,
-    cornsilk: 0xFFF8DC,
-    crimson: 0xDC143C,
-    cyan: 0x00FFFF,
-    darkblue: 0x00008B,
-    darkcyan: 0x008B8B,
-    darkgoldenrod: 0xB8860B,
-    darkgray: 0xA9A9A9,
-    darkgrey: 0xA9A9A9,
-    darkgreen: 0x006400,
-    darkkhaki: 0xBDB76B,
-    darkmagenta: 0x8B008B,
-    darkolivegreen: 0x556B2F,
-    darkorange: 0xFF8C00,
-    darkorchid: 0x9932CC,
-    darkred: 0x8B0000,
-    darksalmon: 0xE9967A,
-    darkseagreen: 0x8FBC8F,
-    darkslateblue: 0x483D8B,
-    darkslategray: 0x2F4F4F,
-    darkslategrey: 0x2F4F4F,
-    darkturquoise: 0x00CED1,
-    darkviolet: 0x9400D3,
-    deeppink: 0xFF1493,
-    deepskyblue: 0x00BFFF,
-    dimgray: 0x696969,
-    dimgrey: 0x696969,
-    dodgerblue: 0x1E90FF,
-    firebrick: 0xB22222,
-    floralwhite: 0xFFFAF0,
-    forestgreen: 0x228B22,
-    fuchsia: 0xFF00FF,
-    gainsboro: 0xDCDCDC,
-    ghostwhite: 0xF8F8FF,
-    gold: 0xFFD700,
-    goldenrod: 0xDAA520,
-    gray: 0x808080,
-    grey: 0x808080,
-    green: 0x008000,
-    greenyellow: 0xADFF2F,
-    honeydew: 0xF0FFF0,
-    hotpink: 0xFF69B4,
-    indianred: 0xCD5C5C,
-    indigo: 0x4B0082,
-    ivory: 0xFFFFF0,
-    khaki: 0xF0E68C,
-    lavender: 0xE6E6FA,
-    lavenderblush: 0xFFF0F5,
-    lawngreen: 0x7CFC00,
-    lemonchiffon: 0xFFFACD,
-    lightblue: 0xADD8E6,
-    lightcoral: 0xF08080,
-    lightcyan: 0xE0FFFF,
-    lightgoldenrodyellow: 0xFAFAD2,
-    lightgray: 0xD3D3D3,
-    lightgrey: 0xD3D3D3,
-    lightgreen: 0x90EE90,
-    lightpink: 0xFFB6C1,
-    lightsalmon: 0xFFA07A,
-    lightseagreen: 0x20B2AA,
-    lightskyblue: 0x87CEFA,
-    lightslategray: 0x778899,
-    lightslategrey: 0x778899,
-    lightsteelblue: 0xB0C4DE,
-    lightyellow: 0xFFFFE0,
-    lime: 0x00FF00,
-    limegreen: 0x32CD32,
-    linen: 0xFAF0E6,
-    magenta: 0xFF00FF,
-    maroon: 0x800000,
-    mediumaquamarine: 0x66CDAA,
-    mediumblue: 0x0000CD,
-    mediumorchid: 0xBA55D3,
-    mediumpurple: 0x9370DB,
-    mediumseagreen: 0x3CB371,
-    mediumslateblue: 0x7B68EE,
-    mediumspringgreen: 0x00FA9A,
-    mediumturquoise: 0x48D1CC,
-    mediumvioletred: 0xC71585,
-    midnightblue: 0x191970,
-    mintcream: 0xF5FFFA,
-    mistyrose: 0xFFE4E1,
-    moccasin: 0xFFE4B5,
-    navajowhite: 0xFFDEAD,
-    navy: 0x000080,
-    oldlace: 0xFDF5E6,
-    olive: 0x808000,
-    olivedrab: 0x6B8E23,
-    orange: 0xFFA500,
-    orangered: 0xFF4500,
-    orchid: 0xDA70D6,
-    palegoldenrod: 0xEEE8AA,
-    palegreen: 0x98FB98,
-    paleturquoise: 0xAFEEEE,
-    palevioletred: 0xDB7093,
-    papayawhip: 0xFFEFD5,
-    peachpuff: 0xFFDAB9,
-    peru: 0xCD853F,
-    pink: 0xFFC0CB,
-    plum: 0xDDA0DD,
-    powderblue: 0xB0E0E6,
-    purple: 0x800080,
-    rebeccapurple: 0x663399,
-    red: 0xFF0000,
-    rosybrown: 0xBC8F8F,
-    royalblue: 0x4169E1,
-    saddlebrown: 0x8B4513,
-    salmon: 0xFA8072,
-    sandybrown: 0xF4A460,
-    seagreen: 0x2E8B57,
-    seashell: 0xFFF5EE,
-    sienna: 0xA0522D,
-    silver: 0xC0C0C0,
-    skyblue: 0x87CEEB,
-    slateblue: 0x6A5ACD,
-    slategray: 0x708090,
-    slategrey: 0x708090,
-    snow: 0xFFFAFA,
-    springgreen: 0x00FF7F,
-    steelblue: 0x4682B4,
-    tan: 0xD2B48C,
-    teal: 0x008080,
-    thistle: 0xD8BFD8,
-    tomato: 0xFF6347,
-    turquoise: 0x40E0D0,
-    violet: 0xEE82EE,
-    wheat: 0xF5DEB3,
-    white: 0xFFFFFF,
-    whitesmoke: 0xF5F5F5,
-    yellow: 0xFFFF00,
-    yellowgreen: 0x9ACD32
-};
-for (var name in colorValues) {
-    if (colorValues.hasOwnProperty(name)) {
-        var color = colorValues[name];
-        ColorNames[name] = Math.floor(color / 65536) + "," + Math.floor(color / 256 % 256) + "," + color % 256;
-    }
-}
-
-// Project
-function registerBackIn(name, amount) {
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        return Math.pow(percentComplete, 2) * ((amount + 1) * percentComplete - amount) * (endValue - startValue);
-    }]);
-}
-function registerBackOut(name, amount) {
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        return (Math.pow(--percentComplete, 2) * ((amount + 1) * percentComplete + amount) + 1) * (endValue - startValue);
-    }]);
-}
-function registerBackInOut(name, amount) {
-    amount *= 1.525;
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        percentComplete *= 2;
-        return (percentComplete < 1 ? Math.pow(percentComplete, 2) * ((amount + 1) * percentComplete - amount) : Math.pow(percentComplete - 2, 2) * ((amount + 1) * (percentComplete - 2) + amount) + 2) * 0.5 * (endValue - startValue);
-    }]);
-}
-registerBackIn("easeInBack", 1.7);
-registerBackOut("easeOutBack", 1.7);
-registerBackInOut("easeInOutBack", 1.7);
-// TODO: Expose these as actions to register custom easings?
-
-// Project
-function easeOutBouncePercent(percentComplete) {
-    if (percentComplete < 1 / 2.75) {
-        return 7.5625 * percentComplete * percentComplete;
-    }
-    if (percentComplete < 2 / 2.75) {
-        return 7.5625 * (percentComplete -= 1.5 / 2.75) * percentComplete + 0.75;
-    }
-    if (percentComplete < 2.5 / 2.75) {
-        return 7.5625 * (percentComplete -= 2.25 / 2.75) * percentComplete + 0.9375;
-    }
-    return 7.5625 * (percentComplete -= 2.625 / 2.75) * percentComplete + 0.984375;
-}
-function easeInBouncePercent(percentComplete) {
-    return 1 - easeOutBouncePercent(1 - percentComplete);
-}
-function easeInBounce(percentComplete, startValue, endValue) {
-    if (percentComplete === 0) {
-        return startValue;
-    }
-    if (percentComplete === 1) {
-        return endValue;
-    }
-    return easeInBouncePercent(percentComplete) * (endValue - startValue);
-}
-function easeOutBounce(percentComplete, startValue, endValue) {
-    if (percentComplete === 0) {
-        return startValue;
-    }
-    if (percentComplete === 1) {
-        return endValue;
-    }
-    return easeOutBouncePercent(percentComplete) * (endValue - startValue);
-}
-function easeInOutBounce(percentComplete, startValue, endValue) {
-    if (percentComplete === 0) {
-        return startValue;
-    }
-    if (percentComplete === 1) {
-        return endValue;
-    }
-    return (percentComplete < 0.5 ? easeInBouncePercent(percentComplete * 2) * 0.5 : easeOutBouncePercent(percentComplete * 2 - 1) * 0.5 + 0.5) * (endValue - startValue);
-}
-registerEasing(["easeInBounce", easeInBounce]);
-registerEasing(["easeOutBounce", easeOutBounce]);
-registerEasing(["easeInOutBounce", easeInOutBounce]);
-
-// Project
-// Constants
-var PI2 = Math.PI * 2;
-function registerElasticIn(name, amplitude, period) {
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        return -(amplitude * Math.pow(2, 10 * (percentComplete -= 1)) * Math.sin((percentComplete - period / PI2 * Math.asin(1 / amplitude)) * PI2 / period)) * (endValue - startValue);
-    }]);
-}
-function registerElasticOut(name, amplitude, period) {
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        return (amplitude * Math.pow(2, -10 * percentComplete) * Math.sin((percentComplete - period / PI2 * Math.asin(1 / amplitude)) * PI2 / period) + 1) * (endValue - startValue);
-    }]);
-}
-function registerElasticInOut(name, amplitude, period) {
-    registerEasing([name, function (percentComplete, startValue, endValue) {
-        if (percentComplete === 0) {
-            return startValue;
-        }
-        if (percentComplete === 1) {
-            return endValue;
-        }
-        var s = period / PI2 * Math.asin(1 / amplitude);
-        percentComplete = percentComplete * 2 - 1;
-        return (percentComplete < 0 ? -0.5 * (amplitude * Math.pow(2, 10 * percentComplete) * Math.sin((percentComplete - s) * PI2 / period)) : amplitude * Math.pow(2, -10 * percentComplete) * Math.sin((percentComplete - s) * PI2 / period) * 0.5 + 1) * (endValue - startValue);
-    }]);
-}
-registerElasticIn("easeInElastic", 1, 0.3);
-registerElasticOut("easeOutElastic", 1, 0.3);
-registerElasticInOut("easeInOutElastic", 1, 0.3 * 1.5);
-// TODO: Expose these as actions to register custom easings?
-
-// Project
-/**
- * Easing function that sets to the specified value immediately after the
- * animation starts.
- */
-function atStart(percentComplete, startValue, endValue) {
-  return percentComplete === 0 ? startValue : endValue;
-}
-/**
- * Easing function that sets to the specified value while the animation is
- * running.
- */
-function during(percentComplete, startValue, endValue) {
-  return percentComplete === 0 || percentComplete === 1 ? startValue : endValue;
-}
-/**
- * Easing function that sets to the specified value when the animation ends.
- */
-function atEnd(percentComplete, startValue, endValue) {
-  return percentComplete === 1 ? endValue : startValue;
-}
-registerEasing(["at-start", atStart]);
-registerEasing(["during", during]);
-registerEasing(["at-end", atEnd]);
-
-// Project
-/**
- * Get/set the inner/outer dimension.
- */
-function getDimension(name, wantInner) {
-    return function (element, propertyValue) {
-        if (propertyValue === undefined) {
-            return augmentDimension(element, name, wantInner) + "px";
-        }
-        setPropertyValue(element, name, parseFloat(propertyValue) - augmentDimension(element, name, wantInner) + "px");
-    };
-}
-registerNormalization(["Element", "innerWidth", getDimension("width", true)]);
-registerNormalization(["Element", "innerHeight", getDimension("height", true)]);
-registerNormalization(["Element", "outerWidth", getDimension("width", false)]);
-registerNormalization(["Element", "outerHeight", getDimension("height", false)]);
-
-// Project
-// Constants
-var inlineRx = /^(b|big|i|small|tt|abbr|acronym|cite|code|dfn|em|kbd|strong|samp|let|a|bdo|br|img|map|object|q|script|span|sub|sup|button|input|label|select|textarea)$/i,
-    listItemRx = /^(li)$/i,
-    tableRowRx = /^(tr)$/i,
-    tableRx = /^(table)$/i,
-    tableRowGroupRx = /^(tbody)$/i;
-function display(element, propertyValue) {
-    var style = element.style;
-    if (propertyValue === undefined) {
-        return computePropertyValue(element, "display");
-    }
-    if (propertyValue === "auto") {
-        var nodeName = element && element.nodeName,
-            data = Data(element);
-        if (inlineRx.test(nodeName)) {
-            propertyValue = "inline";
-        } else if (listItemRx.test(nodeName)) {
-            propertyValue = "list-item";
-        } else if (tableRowRx.test(nodeName)) {
-            propertyValue = "table-row";
-        } else if (tableRx.test(nodeName)) {
-            propertyValue = "table";
-        } else if (tableRowGroupRx.test(nodeName)) {
-            propertyValue = "table-row-group";
-        } else {
-            // Default to "block" when no match is found.
-            propertyValue = "block";
-        }
-        // IMPORTANT: We need to do this as getPropertyValue bypasses the
-        // Normalisation when it exists in the cache.
-        data.cache["display"] = propertyValue;
-    }
-    style.display = propertyValue;
-}
-registerNormalization(["Element", "display", display]);
-
-// Project
-function clientWidth(element, propertyValue) {
-    if (propertyValue == null) {
-        return element.clientWidth + "px";
-    }
-}
-function scrollWidth(element, propertyValue) {
-    if (propertyValue == null) {
-        return element.scrollWidth + "px";
-    }
-}
-function clientHeight(element, propertyValue) {
-    if (propertyValue == null) {
-        return element.clientHeight + "px";
-    }
-}
-function scrollHeight(element, propertyValue) {
-    if (propertyValue == null) {
-        return element.scrollHeight + "px";
-    }
-}
-function scroll(direction, end) {
-    return function (element, propertyValue) {
-        if (propertyValue == null) {
-            // Make sure we have these values cached.
-            getPropertyValue(element, "client" + direction, null, true);
-            getPropertyValue(element, "scroll" + direction, null, true);
-            return element["scroll" + end] + "px";
-        }
-        var value = parseFloat(propertyValue),
-            unit = propertyValue.replace(String(value), "");
-        switch (unit) {
-            case "":
-            case "px":
-                element["scroll" + end] = value;
-                break;
-            case "%":
-                var client = parseFloat(getPropertyValue(element, "client" + direction)),
-                    scrollValue = parseFloat(getPropertyValue(element, "scroll" + direction));
-                element["scroll" + end] = Math.max(0, scrollValue - client) * value / 100;
-                break;
-        }
-    };
-}
-registerNormalization(["HTMLElement", "scroll", scroll("Height", "Top"), false]);
-registerNormalization(["HTMLElement", "scrollTop", scroll("Height", "Top"), false]);
-registerNormalization(["HTMLElement", "scrollLeft", scroll("Width", "Left"), false]);
-registerNormalization(["HTMLElement", "scrollWidth", scrollWidth]);
-registerNormalization(["HTMLElement", "clientWidth", clientWidth]);
-registerNormalization(["HTMLElement", "scrollHeight", scrollHeight]);
-registerNormalization(["HTMLElement", "clientHeight", clientHeight]);
-
-// Project
-/**
- * An RegExp pattern for the following list of css words using
- * http://kemio.com.ar/tools/lst-trie-re.php to generate:
- *
- * blockSize
- * borderBottomLeftRadius
- * borderBottomRightRadius
- * borderBottomWidth
- * borderImageOutset
- * borderImageWidth
- * borderLeftWidth
- * borderRadius
- * borderRightWidth
- * borderSpacing
- * borderTopLeftRadius
- * borderTopRightRadius
- * borderTopWidth
- * borderWidth
- * bottom
- * columnGap
- * columnRuleWidth
- * columnWidth
- * flexBasis
- * fontSize
- * gridColumnGap
- * gridGap
- * gridRowGap
- * height
- * inlineSize
- * left
- * letterSpacing
- * margin
- * marginBottom
- * marginLeft
- * marginRight
- * marginTop
- * maxBlockSize
- * maxHeight
- * maxInlineSize
- * maxWidth
- * minBlockSize
- * minHeight
- * minInlineSize
- * minWidth
- * objectPosition
- * outlineOffset
- * outlineWidth
- * padding
- * paddingBottom
- * paddingLeft
- * paddingRight
- * paddingTop
- * perspective
- * right
- * shapeMargin
- * strokeDashoffset
- * strokeWidth
- * textIndent
- * top
- * transformOrigin
- * width
- * wordSpacing
- */
-// tslint:disable-next-line:max-line-length
-var rxAddPx = /^(b(lockSize|o(rder(Bottom(LeftRadius|RightRadius|Width)|Image(Outset|Width)|LeftWidth|R(adius|ightWidth)|Spacing|Top(LeftRadius|RightRadius|Width)|Width)|ttom))|column(Gap|RuleWidth|Width)|f(lexBasis|ontSize)|grid(ColumnGap|Gap|RowGap)|height|inlineSize|le(ft|tterSpacing)|m(a(rgin(Bottom|Left|Right|Top)|x(BlockSize|Height|InlineSize|Width))|in(BlockSize|Height|InlineSize|Width))|o(bjectPosition|utline(Offset|Width))|p(adding(Bottom|Left|Right|Top)|erspective)|right|s(hapeMargin|troke(Dashoffset|Width))|t(extIndent|op|ransformOrigin)|w(idth|ordSpacing))$/;
-/**
- * Return a Normalisation that can be used to set / get a prefixed style
- * property.
- */
-function getSetPrefixed(propertyName, unprefixed) {
-    return function (element, propertyValue) {
-        if (propertyValue === undefined) {
-            return computePropertyValue(element, propertyName) || computePropertyValue(element, unprefixed);
-        }
-        element.style[propertyName] = element.style[unprefixed] = propertyValue;
-    };
-}
-/**
- * Return a Normalisation that can be used to set / get a style property.
- */
-function getSetStyle(propertyName) {
-    return function (element, propertyValue) {
-        if (propertyValue === undefined) {
-            return computePropertyValue(element, propertyName);
-        }
-        element.style[propertyName] = propertyValue;
-    };
-}
-/**
- * Vendor prefixes. Chrome / Safari, Firefox, IE / Edge, Opera.
- */
-var rxVendors = /^(webkit|moz|ms|o)[A-Z]/,
-    prefixElement = State.prefixElement;
-if (prefixElement) {
-    for (var propertyName in prefixElement.style) {
-        if (rxVendors.test(propertyName)) {
-            var unprefixed = propertyName.replace(/^[a-z]+([A-Z])/, function ($, letter) {
-                return letter.toLowerCase();
-            });
-            {
-                var addUnit = rxAddPx.test(unprefixed) ? "px" : undefined;
-                registerNormalization(["Element", unprefixed, getSetPrefixed(propertyName, unprefixed), addUnit]);
-            }
-        } else if (!hasNormalization(["Element", propertyName])) {
-            var _addUnit = rxAddPx.test(propertyName) ? "px" : undefined;
-            registerNormalization(["Element", propertyName, getSetStyle(propertyName), _addUnit]);
-        }
-    }
-}
-
-// Project
-/**
- * Get/set an attribute.
- */
-function getAttribute(name) {
-    return function (element, propertyValue) {
-        if (propertyValue === undefined) {
-            return element.getAttribute(name);
-        }
-        element.setAttribute(name, propertyValue);
-    };
-}
-var base = document.createElement("div"),
-    rxSubtype = /^SVG(.*)Element$/,
-    rxElement = /Element$/;
-Object.getOwnPropertyNames(window).forEach(function (property) {
-    var subtype = rxSubtype.exec(property);
-    if (subtype && subtype[1] !== "SVG") {
-        // Don't do SVGSVGElement.
-        try {
-            var element = subtype[1] ? document.createElementNS("http://www.w3.org/2000/svg", (subtype[1] || "svg").toLowerCase()) : document.createElement("svg");
-            // tslint:disable-next-line:forin
-            for (var attribute in element) {
-                // Although this isn't a tween without prototypes, we do
-                // want to get hold of all attributes and not just own ones.
-                var value = element[attribute];
-                if (isString(attribute) && !(attribute[0] === "o" && attribute[1] === "n") && attribute !== attribute.toUpperCase() && !rxElement.test(attribute) && !(attribute in base) && !isFunction(value)) {
-                    // TODO: Should this all be set on the generic SVGElement, it would save space and time, but not as powerful
-                    registerNormalization([property, attribute, getAttribute(attribute)]);
-                }
-            }
-        } catch (e) {
-            console.error("VelocityJS: Error when trying to identify SVG attributes on " + property + ".", e);
-        }
-    }
-});
-
-// Project
-/**
- * Get/set the width or height.
- */
-function getDimension$1(name) {
-    return function (element, propertyValue) {
-        if (propertyValue === undefined) {
-            // Firefox throws an error if .getBBox() is called on an SVG that isn't attached to the DOM.
-            try {
-                return element.getBBox()[name] + "px";
-            } catch (e) {
-                return "0px";
-            }
-        }
-        element.setAttribute(name, propertyValue);
-    };
-}
-registerNormalization(["SVGElement", "width", getDimension$1("width")]);
-registerNormalization(["SVGElement", "height", getDimension$1("height")]);
-
-// Project
-/**
- * A fake normalization used to allow the "tween" property easy access.
- */
-function getSetTween(element, propertyValue) {
-    if (propertyValue === undefined) {
-        return "";
-    }
-}
-registerNormalization(["Element", "tween", getSetTween]);
-
-// Automatically generated
-var VERSION = "2.0.6";
-
-// Project
-var Velocity$$1 = Velocity$1;
-/**
- * These parts of Velocity absolutely must be included, even if they're unused!
- */
-var VelocityStatic;
-(function (VelocityStatic) {
-    /**
-     * Actions cannot be replaced if they are internal (hasOwnProperty is false
-     * but they still exist). Otherwise they can be replaced by users.
-     *
-     * All external method calls should be using actions rather than sub-calls
-     * of Velocity itself.
-     */
-    VelocityStatic.Actions = Actions;
-    /**
-     * Our known easing functions.
-     */
-    VelocityStatic.Easings = Easings;
-    /**
-     * The currently registered sequences.
-     */
-    VelocityStatic.Sequences = SequencesObject;
-    /**
-     * Current internal state of Velocity.
-     */
-    VelocityStatic.State = State; // tslint:disable-line:no-shadowed-variable
-    /**
-     * Velocity option defaults, which can be overriden by the user.
-     */
-    VelocityStatic.defaults = defaults$1;
-    /**
-     * Used to patch any object to allow Velocity chaining. In order to chain an
-     * object must either be treatable as an array - with a <code>.length</code>
-     * property, and each member a Node, or a Node directly.
-     *
-     * By default Velocity will try to patch <code>window</code>,
-     * <code>jQuery</code>, <code>Zepto</code>, and several classes that return
-     * Nodes or lists of Nodes.
-     */
-    VelocityStatic.patch = patch;
-    /**
-     * Set to true, 1 or 2 (most verbose) to output debug info to console.
-     */
-    VelocityStatic.debug = false;
-    /**
-     * In mock mode, all animations are forced to complete immediately upon the
-     * next rAF tick. If there are further animations queued then they will each
-     * take one single frame in turn. Loops and repeats will be disabled while
-     * <code>mock = true</code>.
-     */
-    VelocityStatic.mock = false;
-    /**
-     * Save our version number somewhere visible.
-     */
-    VelocityStatic.version = VERSION;
-    /**
-     * Added as a fallback for "import {Velocity} from 'velocity-animate';".
-     */
-    VelocityStatic.Velocity = Velocity$1; // tslint:disable-line:no-shadowed-variable
-})(VelocityStatic || (VelocityStatic = {}));
-/* IE detection. Gist: https://gist.github.com/julianshapiro/9098609 */
-var IE = function () {
-    if (document.documentMode) {
-        return document.documentMode;
-    } else {
-        for (var i = 7; i > 4; i--) {
-            var div = document.createElement("div");
-            div.innerHTML = "<!" + "--" + "[if IE " + i + "]><span></span><![endif]-->";
-            if (div.getElementsByTagName("span").length) {
-                div = null;
-                return i;
-            }
-        }
-    }
-    return undefined;
-}();
-/******************
- Unsupported
- ******************/
-if (IE <= 8) {
-    throw new Error("VelocityJS cannot run on Internet Explorer 8 or earlier");
-}
-/******************
- Frameworks
- ******************/
-if (window) {
-    /*
-     * Both jQuery and Zepto allow their $.fn object to be extended to allow
-     * wrapped elements to be subjected to plugin calls. If either framework is
-     * loaded, register a "velocity" extension pointing to Velocity's core
-     * animate() method. Velocity also registers itself onto a global container
-     * (window.jQuery || window.Zepto || window) so that certain features are
-     * accessible beyond just a per-element scope. Accordingly, Velocity can
-     * both act on wrapped DOM elements and stand alone for targeting raw DOM
-     * elements.
-     */
-    var jQuery = window.jQuery,
-        Zepto = window.Zepto;
-    patch(window, true);
-    patch(Element && Element.prototype);
-    patch(NodeList && NodeList.prototype);
-    patch(HTMLCollection && HTMLCollection.prototype);
-    patch(jQuery, true);
-    patch(jQuery && jQuery.fn);
-    patch(Zepto, true);
-    patch(Zepto && Zepto.fn);
-}
-// Make sure that the values within Velocity are read-only and upatchable.
-
-var _loop = function _loop(property) {
-    if (VelocityStatic.hasOwnProperty(property)) {
-        switch (typeof property === "undefined" ? "undefined" : _typeof(property)) {
-            case "number":
-            case "boolean":
-                defineProperty$1(Velocity$$1, property, {
-                    get: function get$$1() {
-                        return VelocityStatic[property];
-                    },
-                    set: function set$$1(value) {
-                        VelocityStatic[property] = value;
-                    }
-                }, true);
-                break;
-            default:
-                defineProperty$1(Velocity$$1, property, VelocityStatic[property], true);
-                break;
-        }
-    }
-};
-
-for (var property in VelocityStatic) {
-    _loop(property);
-}
-Object.freeze(Velocity$$1);
-
-// Project
-var rxPercents = /(\d*\.\d+|\d+\.?|from|to)/g;
-function expandSequence(animation, sequence) {
-    var tweens = animation.tweens = Object.create(null),
-        element = animation.element;
-    for (var propertyName in sequence.tweens) {
-        if (sequence.tweens.hasOwnProperty(propertyName)) {
-            var fn = getNormalization(element, propertyName);
-            if (!fn && propertyName !== "tween") {
-                if (Velocity$$1.debug) {
-                    console.log("Skipping [" + propertyName + "] due to a lack of browser support.");
-                }
-                continue;
-            }
-            tweens[propertyName] = {
-                fn: fn,
-                sequence: sequence.tweens[propertyName]
-            };
-        }
-    }
-}
-/**
- * Used to register a sequence. This should never be called by users
- * directly, instead it should be called via an action:<br/>
- * <code>Velocity("registerSequence", ""name", VelocitySequence);</code>
- */
-function registerSequence(args) {
-    if (isPlainObject(args[0])) {
-        for (var name in args[0]) {
-            if (args[0].hasOwnProperty(name)) {
-                registerSequence([name, args[0][name]]);
-            }
-        }
-    } else if (isString(args[0])) {
-        var _name = args[0],
-            sequence = args[1];
-        if (!isString(_name)) {
-            console.warn("VelocityJS: Trying to set 'registerSequence' name to an invalid value:", _name);
-        } else if (!isPlainObject(sequence)) {
-            console.warn("VelocityJS: Trying to set 'registerSequence' sequence to an invalid value:", _name, sequence);
-        } else {
-            if (SequencesObject[_name]) {
-                console.warn("VelocityJS: Replacing named sequence:", _name);
-            }
-            var percents = {},
-                steps = new Array(100),
-                properties = [],
-                sequenceList = SequencesObject[_name] = {},
-                duration = validateDuration(sequence.duration);
-            sequenceList.tweens = {};
-            if (isNumber(duration)) {
-                sequenceList.duration = duration;
-            }
-            for (var part in sequence) {
-                if (sequence.hasOwnProperty(part)) {
-                    var keys = String(part).match(rxPercents);
-                    if (keys) {
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
-
-                        try {
-                            for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var key = _step.value;
-
-                                var percent = key === "from" ? 0 : key === "to" ? 100 : parseFloat(key);
-                                if (percent < 0 || percent > 100) {
-                                    console.warn("VelocityJS: Trying to use an invalid value as a percentage (0 <= n <= 100):", _name, percent);
-                                } else if (isNaN(percent)) {
-                                    console.warn("VelocityJS: Trying to use an invalid number as a percentage:", _name, part, key);
-                                } else {
-                                    if (!percents[String(percent)]) {
-                                        percents[String(percent)] = [];
-                                    }
-                                    percents[String(percent)].push(part);
-                                    for (var property in sequence[part]) {
-                                        if (!properties.includes(property)) {
-                                            properties.push(property);
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return) {
-                                    _iterator.return();
-                                }
-                            } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            var orderedPercents = Object.keys(percents).sort(function (a, b) {
-                var a1 = parseFloat(a),
-                    b1 = parseFloat(b);
-                return a1 > b1 ? 1 : a1 < b1 ? -1 : 0;
-            });
-            orderedPercents.forEach(function (key) {
-                steps.push.apply(percents[key]);
-            });
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = properties[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var _property = _step2.value;
-
-                    var parts = [],
-                        propertyName = camelCase(_property);
-                    var _iteratorNormalCompletion3 = true;
-                    var _didIteratorError3 = false;
-                    var _iteratorError3 = undefined;
-
-                    try {
-                        for (var _iterator3 = orderedPercents[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                            var _key = _step3.value;
-                            var _iteratorNormalCompletion6 = true;
-                            var _didIteratorError6 = false;
-                            var _iteratorError6 = undefined;
-
-                            try {
-                                for (var _iterator6 = percents[_key][Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                                    var _value = _step6.value;
-
-                                    var stepProperties = sequence[_value];
-                                    if (stepProperties[propertyName]) {
-                                        parts.push(isString(stepProperties[propertyName]) ? stepProperties[propertyName] : stepProperties[propertyName][0]);
-                                    }
-                                }
-                            } catch (err) {
-                                _didIteratorError6 = true;
-                                _iteratorError6 = err;
-                            } finally {
-                                try {
-                                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                                        _iterator6.return();
-                                    }
-                                } finally {
-                                    if (_didIteratorError6) {
-                                        throw _iteratorError6;
-                                    }
-                                }
-                            }
-                        }
-                    } catch (err) {
-                        _didIteratorError3 = true;
-                        _iteratorError3 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                _iterator3.return();
-                            }
-                        } finally {
-                            if (_didIteratorError3) {
-                                throw _iteratorError3;
-                            }
-                        }
-                    }
-
-                    if (parts.length) {
-                        var realSequence = findPattern(parts, propertyName);
-                        var index = 0;
-                        if (realSequence) {
-                            var _iteratorNormalCompletion4 = true;
-                            var _didIteratorError4 = false;
-                            var _iteratorError4 = undefined;
-
-                            try {
-                                for (var _iterator4 = orderedPercents[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                                    var _key2 = _step4.value;
-                                    var _iteratorNormalCompletion5 = true;
-                                    var _didIteratorError5 = false;
-                                    var _iteratorError5 = undefined;
-
-                                    try {
-                                        for (var _iterator5 = percents[_key2][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                                            var value = _step5.value;
-
-                                            var originalProperty = sequence[value][propertyName];
-                                            if (originalProperty) {
-                                                if (Array.isArray(originalProperty) && originalProperty.length > 1 && (isString(originalProperty[1]) || Array.isArray(originalProperty[1]))) {
-                                                    realSequence[index].easing = validateEasing(originalProperty[1], sequenceList.duration || DEFAULT_DURATION);
-                                                }
-                                                realSequence[index++].percent = parseFloat(_key2) / 100;
-                                            }
-                                        }
-                                    } catch (err) {
-                                        _didIteratorError5 = true;
-                                        _iteratorError5 = err;
-                                    } finally {
-                                        try {
-                                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                                                _iterator5.return();
-                                            }
-                                        } finally {
-                                            if (_didIteratorError5) {
-                                                throw _iteratorError5;
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (err) {
-                                _didIteratorError4 = true;
-                                _iteratorError4 = err;
-                            } finally {
-                                try {
-                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                        _iterator4.return();
-                                    }
-                                } finally {
-                                    if (_didIteratorError4) {
-                                        throw _iteratorError4;
-                                    }
-                                }
-                            }
-
-                            sequenceList.tweens[propertyName] = realSequence;
-                        }
-                    }
-                }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
-        }
-    }
-}
-registerAction(["registerSequence", registerSequence], true);
+//# sourceMappingURL=tick.js.map
 
 // Project
 var globalPromise = void 0;
@@ -4296,7 +2836,7 @@ function patchPromise(promiseObject, result) {
     }
 }
 /* tslint:enable:max-line-length */
-function Velocity$1() {
+function Velocity() {
     var
     /**
      * A shortcut to the default options.
@@ -4393,7 +2933,7 @@ function Velocity$1() {
     }
     // Allow elements to be chained.
     if (elements) {
-        defineProperty$1(elements, "velocity", Velocity$1.bind(elements));
+        defineProperty$1(elements, "velocity", Velocity.bind(elements));
         if (animations) {
             defineProperty$1(elements.velocity, "animations", animations);
         }
@@ -4689,6 +3229,7 @@ function optionCallback(fn, element, index, length, elements, option) {
         console.error("VelocityJS: Exception when calling '" + option + "' callback:", e);
     }
 }
+//# sourceMappingURL=velocityFn.js.map
 
 // Project
 /**
@@ -4702,18 +3243,1454 @@ function optionCallback(fn, element, index, length, elements, option) {
  */
 function patch(proto, global) {
     try {
-        defineProperty$1(proto, (global ? "V" : "v") + "elocity", Velocity$1);
+        defineProperty$1(proto, (global ? "V" : "v") + "elocity", Velocity);
     } catch (e) {
         console.warn("VelocityJS: Error when trying to add prototype.", e);
     }
 }
+//# sourceMappingURL=patch.js.map
 
 // Project
-var Velocity$2 = Velocity$1;
+/**
+ * Check if an animation should be finished, and if so we set the tweens to
+ * the final value for it, then call complete.
+ */
+function checkAnimationShouldBeFinished(animation, queueName, defaultQueue) {
+    validateTweens(animation);
+    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
+        if (!(animation._flags & 4 /* STARTED */)) {
+            // tslint:disable-line:no-bitwise
+            // Copied from tick.ts - ensure that the animation is completely
+            // valid and run begin() before complete().
+            var options = animation.options;
+            // The begin callback is fired once per call, not once per
+            // element, and is passed the full raw DOM element set as both
+            // its context and its first argument.
+            if (options._started++ === 0) {
+                options._first = animation;
+                if (options.begin) {
+                    // Pass to an external fn with a try/catch block for optimisation
+                    beginCall(animation);
+                    // Only called once, even if reversed or repeated
+                    options.begin = undefined;
+                }
+            }
+            animation._flags |= 4 /* STARTED */; // tslint:disable-line:no-bitwise
+        }
+        // tslint:disable-next-line:forin
+        for (var property in animation.tweens) {
+            var tween = animation.tweens[property],
+                sequence = tween.sequence,
+                pattern = sequence.pattern;
+            var currentValue = "",
+                i = 0;
+            if (pattern) {
+                var endValues = sequence[sequence.length - 1];
+                for (; i < pattern.length; i++) {
+                    var endValue = endValues[i];
+                    currentValue += endValue == null ? pattern[i] : endValue;
+                }
+            }
+            setPropertyValue(animation.element, property, currentValue, tween.fn);
+        }
+        completeCall(animation);
+    }
+}
+/**
+ * When the finish action is triggered, the elements' currently active call is
+ * immediately finished. When an element is finished, the next item in its
+ * animation queue is immediately triggered. If passed via a chained call
+ * then this will only target the animations in that call, and not the
+ * elements linked to it.
+ *
+ * A queue name may be passed in to specify that only animations on the
+ * named queue are finished. The default queue is named "". In addition the
+ * value of `false` is allowed for the queue name.
+ *
+ * An final argument may be passed in to clear an element's remaining queued
+ * calls. This may only be the value `true`.
+ */
+function finish(args, elements, promiseHandler) {
+    var queueName = validateQueue(args[0], true),
+        defaultQueue = defaults$1.queue,
+        finishAll = args[queueName === undefined ? 0 : 1] === true;
+    if (isVelocityResult(elements) && elements.velocity.animations) {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var animation = _step.value;
+
+                checkAnimationShouldBeFinished(animation, queueName, defaultQueue);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    } else {
+        while (State.firstNew) {
+            validateTweens(State.firstNew);
+        }
+        for (var activeCall = State.first, nextCall; activeCall && (finishAll || activeCall !== State.firstNew); activeCall = nextCall || State.firstNew) {
+            nextCall = activeCall._next;
+            if (!elements || elements.includes(activeCall.element)) {
+                checkAnimationShouldBeFinished(activeCall, queueName, defaultQueue);
+            }
+        }
+    }
+    if (promiseHandler) {
+        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
+            elements.then(promiseHandler._resolver);
+        } else {
+            promiseHandler._resolver(elements);
+        }
+    }
+}
+registerAction(["finish", finish], true);
+//# sourceMappingURL=finish.js.map
+
+/**
+ * Used to map getters for the various AnimationFlags.
+ */
+var animationFlags = {
+    isExpanded: 1 /* EXPANDED */
+    , isReady: 2 /* READY */
+    , isStarted: 4 /* STARTED */
+    , isStopped: 8 /* STOPPED */
+    , isPaused: 16 /* PAUSED */
+    , isSync: 32 /* SYNC */
+    , isReverse: 64 /* REVERSE */
+};
+/**
+ * Get or set an option or running AnimationCall data value. If there is no
+ * value passed then it will get, otherwise we will set.
+ *
+ * NOTE: When using "get" this will not touch the Promise as it is never
+ * returned to the user.
+ */
+function option(args, elements, promiseHandler, action) {
+    var key = args[0],
+        queue = action.indexOf(".") >= 0 ? action.replace(/^.*\./, "") : undefined,
+        queueName = queue === "false" ? false : validateQueue(queue, true);
+    var animations = void 0,
+        value = args[1];
+    if (!key) {
+        console.warn("VelocityJS: Cannot access a non-existant key!");
+        return null;
+    }
+    // If we're chaining the return value from Velocity then we are only
+    // interested in the values related to that call
+    if (isVelocityResult(elements) && elements.velocity.animations) {
+        animations = elements.velocity.animations;
+    } else {
+        animations = [];
+        for (var activeCall = State.first; activeCall; activeCall = activeCall._next) {
+            if (elements.indexOf(activeCall.element) >= 0 && getValue(activeCall.queue, activeCall.options.queue) === queueName) {
+                animations.push(activeCall);
+            }
+        }
+        // If we're dealing with multiple elements that are pointing at a
+        // single running animation, then instead treat them as a single
+        // animation.
+        if (elements.length > 1 && animations.length > 1) {
+            var i = 1,
+                options = animations[0].options;
+            while (i < animations.length) {
+                if (animations[i++].options !== options) {
+                    options = null;
+                    break;
+                }
+            }
+            // TODO: this needs to check that they're actually a sync:true animation to merge the results, otherwise the individual values may be different
+            if (options) {
+                animations = [animations[0]];
+            }
+        }
+    }
+    // GET
+    if (value === undefined) {
+        var result = [],
+            flag = animationFlags[key];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var animation = _step.value;
+
+                if (flag === undefined) {
+                    // A normal key to get.
+                    result.push(getValue(animation[key], animation.options[key]));
+                } else {
+                    // A flag that we're checking against.
+                    result.push((animation._flags & flag) === 0); // tslint:disable-line:no-bitwise
+                }
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        if (elements.length === 1 && animations.length === 1) {
+            // If only a single animation is found and we're only targetting a
+            // single element, then return the value directly
+            return result[0];
+        }
+        return result;
+    }
+    // SET
+    var isPercentComplete = void 0;
+    switch (key) {
+        case "cache":
+            value = validateCache(value);
+            break;
+        case "begin":
+            value = validateBegin(value);
+            break;
+        case "complete":
+            value = validateComplete(value);
+            break;
+        case "delay":
+            value = validateDelay(value);
+            break;
+        case "duration":
+            value = validateDuration(value);
+            break;
+        case "fpsLimit":
+            value = validateFpsLimit(value);
+            break;
+        case "loop":
+            value = validateLoop(value);
+            break;
+        case "percentComplete":
+            isPercentComplete = true;
+            value = parseFloat(value);
+            break;
+        case "repeat":
+        case "repeatAgain":
+            value = validateRepeat(value);
+            break;
+        default:
+            if (key[0] !== "_") {
+                var num = parseFloat(value);
+                if (value === String(num)) {
+                    value = num;
+                }
+                break;
+            }
+        // deliberate fallthrough
+        case "queue":
+        case "promise":
+        case "promiseRejectEmpty":
+        case "easing":
+        case "started":
+            console.warn("VelocityJS: Trying to set a read-only key:", key);
+            return;
+    }
+    if (value === undefined || value !== value) {
+        console.warn("VelocityJS: Trying to set an invalid value:" + key + "=" + value + " (" + args[1] + ")");
+        return null;
+    }
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+        for (var _iterator2 = animations[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var _animation = _step2.value;
+
+            if (isPercentComplete) {
+                _animation.timeStart = lastTick - getValue(_animation.duration, _animation.options.duration, defaults$1.duration) * value;
+            } else {
+                _animation[key] = value;
+            }
+        }
+    } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+    } finally {
+        try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+            }
+        } finally {
+            if (_didIteratorError2) {
+                throw _iteratorError2;
+            }
+        }
+    }
+
+    if (promiseHandler) {
+        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
+            elements.then(promiseHandler._resolver);
+        } else {
+            promiseHandler._resolver(elements);
+        }
+    }
+}
+registerAction(["option", option], true);
+//# sourceMappingURL=option.js.map
+
+// Project
+/**
+ * Check if an animation should be paused / resumed.
+ */
+function checkAnimation(animation, queueName, defaultQueue, isPaused) {
+    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
+        if (isPaused) {
+            animation._flags |= 16 /* PAUSED */; // tslint:disable-line:no-bitwise
+        } else {
+            animation._flags &= ~16 /* PAUSED */; // tslint:disable-line:no-bitwise
+        }
+    }
+}
+/**
+ * Pause and Resume are call-wide (not on a per element basis). Thus, calling pause or resume on a
+ * single element will cause any calls that contain tweens for that element to be paused/resumed
+ * as well.
+ */
+function pauseResume(args, elements, promiseHandler, action) {
+    var isPaused = action.indexOf("pause") === 0,
+        queue = action.indexOf(".") >= 0 ? action.replace(/^.*\./, "") : undefined,
+        queueName = queue === "false" ? false : validateQueue(args[0]),
+        defaultQueue = defaults$1.queue;
+    if (isVelocityResult(elements) && elements.velocity.animations) {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var animation = _step.value;
+
+                checkAnimation(animation, queueName, defaultQueue, isPaused);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    } else {
+        var activeCall = State.first;
+        while (activeCall) {
+            if (!elements || elements.includes(activeCall.element)) {
+                checkAnimation(activeCall, queueName, defaultQueue, isPaused);
+            }
+            activeCall = activeCall._next;
+        }
+    }
+    if (promiseHandler) {
+        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
+            elements.then(promiseHandler._resolver);
+        } else {
+            promiseHandler._resolver(elements);
+        }
+    }
+}
+registerAction(["pause", pauseResume], true);
+registerAction(["resume", pauseResume], true);
+//# sourceMappingURL=pauseResume.js.map
+
+// Project
+/**
+ * Get or set a style of Nomralised property value on one or more elements.
+ * If there is no value passed then it will get, otherwise we will set.
+ *
+ * NOTE: When using "get" this will not touch the Promise as it is never
+ * returned to the user.
+ *
+ * This can fail to set, and will reject the Promise if it does so.
+ *
+ * Velocity(elements, "style", "property", "value") => elements;
+ * Velocity(elements, "style", {"property": "value", ...}) => elements;
+ * Velocity(element, "style", "property") => "value";
+ * Velocity(elements, "style", "property") => ["value", ...];
+ */
+function propertyAction(args, elements, promiseHandler, action) {
+    var property = args[0],
+        value = args[1];
+    if (!property) {
+        console.warn("VelocityJS: Cannot access a non-existant property!");
+        return null;
+    }
+    // GET
+    if (value === undefined && !isPlainObject(property)) {
+        if (Array.isArray(property)) {
+            if (elements.length === 1) {
+                var result = {};
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = property[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var prop = _step.value;
+
+                        result[prop] = fixColors(getPropertyValue(elements[0], prop));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                return result;
+            } else {
+                var _result = [];
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var element = _step2.value;
+
+                        var res = {};
+                        var _iteratorNormalCompletion3 = true;
+                        var _didIteratorError3 = false;
+                        var _iteratorError3 = undefined;
+
+                        try {
+                            for (var _iterator3 = property[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                var _prop = _step3.value;
+
+                                res[_prop] = fixColors(getPropertyValue(element, _prop));
+                            }
+                        } catch (err) {
+                            _didIteratorError3 = true;
+                            _iteratorError3 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                    _iterator3.return();
+                                }
+                            } finally {
+                                if (_didIteratorError3) {
+                                    throw _iteratorError3;
+                                }
+                            }
+                        }
+
+                        _result.push(res);
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+
+                return _result;
+            }
+        } else {
+            // If only a single animation is found and we're only targetting a
+            // single element, then return the value directly
+            if (elements.length === 1) {
+                return fixColors(getPropertyValue(elements[0], property));
+            }
+            var _result2 = [];
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = elements[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var _element = _step4.value;
+
+                    _result2.push(fixColors(getPropertyValue(_element, property)));
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
+            return _result2;
+        }
+    }
+    // SET
+    var error = [];
+    if (isPlainObject(property)) {
+        for (var propertyName in property) {
+            if (property.hasOwnProperty(propertyName)) {
+                var _iteratorNormalCompletion5 = true;
+                var _didIteratorError5 = false;
+                var _iteratorError5 = undefined;
+
+                try {
+                    for (var _iterator5 = elements[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                        var _element2 = _step5.value;
+
+                        var propertyValue = property[propertyName];
+                        if (isString(propertyValue) || isNumber(propertyValue)) {
+                            setPropertyValue(_element2, propertyName, property[propertyName]);
+                        } else {
+                            error.push("Cannot set a property \"" + propertyName + "\" to an unknown type: " + (typeof propertyValue === "undefined" ? "undefined" : _typeof(propertyValue)));
+                            console.warn("VelocityJS: Cannot set a property \"" + propertyName + "\" to an unknown type:", propertyValue);
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError5 = true;
+                    _iteratorError5 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                            _iterator5.return();
+                        }
+                    } finally {
+                        if (_didIteratorError5) {
+                            throw _iteratorError5;
+                        }
+                    }
+                }
+            }
+        }
+    } else if (isString(value) || isNumber(value)) {
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
+
+        try {
+            for (var _iterator6 = elements[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                var _element3 = _step6.value;
+
+                setPropertyValue(_element3, property, String(value));
+            }
+        } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                    _iterator6.return();
+                }
+            } finally {
+                if (_didIteratorError6) {
+                    throw _iteratorError6;
+                }
+            }
+        }
+    } else {
+        error.push("Cannot set a property \"" + property + "\" to an unknown type: " + (typeof value === "undefined" ? "undefined" : _typeof(value)));
+        console.warn("VelocityJS: Cannot set a property \"" + property + "\" to an unknown type:", value);
+    }
+    if (promiseHandler) {
+        if (error.length) {
+            promiseHandler._rejecter(error.join(", "));
+        } else if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
+            elements.then(promiseHandler._resolver);
+        } else {
+            promiseHandler._resolver(elements);
+        }
+    }
+}
+registerAction(["property", propertyAction], true);
+
+// Project
+registerAction(["reverse", function (args, elements, promiseHandler, action) {
+        // NOTE: Code needs to split out before here - but this is needed to prevent it being overridden
+        throw new SyntaxError("VelocityJS: The 'reverse' action is built in and private.");
+}], true);
+//# sourceMappingURL=reverse.js.map
+
+// Project
+/**
+ * Check if an animation should be stopped, and if so then set the STOPPED
+ * flag on it, then call complete.
+ */
+function checkAnimationShouldBeStopped(animation, queueName, defaultQueue) {
+    validateTweens(animation);
+    if (queueName === undefined || queueName === getValue(animation.queue, animation.options.queue, defaultQueue)) {
+        animation._flags |= 8 /* STOPPED */; // tslint:disable-line:no-bitwise
+        completeCall(animation);
+    }
+}
+/**
+ * When the stop action is triggered, the elements' currently active call is
+ * immediately stopped. When an element is stopped, the next item in its
+ * animation queue is immediately triggered. If passed via a chained call
+ * then this will only target the animations in that call, and not the
+ * elements linked to it.
+ *
+ * A queue name may be passed in to specify that only animations on the
+ * named queue are stopped. The default queue is named "". In addition the
+ * value of `false` is allowed for the queue name.
+ *
+ * An final argument may be passed in to clear an element's remaining queued
+ * calls. This may only be the value `true`.
+ *
+ * Note: The stop command runs prior to Velocity's Queueing phase since its
+ * behavior is intended to take effect *immediately*, regardless of the
+ * element's current queue state.
+ */
+function stop(args, elements, promiseHandler, action) {
+    var queueName = validateQueue(args[0], true),
+        defaultQueue = defaults$1.queue,
+        finishAll = args[queueName === undefined ? 0 : 1] === true;
+    if (isVelocityResult(elements) && elements.velocity.animations) {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = elements.velocity.animations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var animation = _step.value;
+
+                checkAnimationShouldBeStopped(animation, queueName, defaultQueue);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    } else {
+        while (State.firstNew) {
+            validateTweens(State.firstNew);
+        }
+        for (var activeCall = State.first, nextCall; activeCall && (finishAll || activeCall !== State.firstNew); activeCall = nextCall || State.firstNew) {
+            nextCall = activeCall._next;
+            if (!elements || elements.includes(activeCall.element)) {
+                checkAnimationShouldBeStopped(activeCall, queueName, defaultQueue);
+            }
+        }
+    }
+    if (promiseHandler) {
+        if (isVelocityResult(elements) && elements.velocity.animations && elements.then) {
+            elements.then(promiseHandler._resolver);
+        } else {
+            promiseHandler._resolver(elements);
+        }
+    }
+}
+registerAction(["stop", stop], true);
+//# sourceMappingURL=stop.js.map
+
+// Project
+registerAction(["style", propertyAction], true);
+//# sourceMappingURL=style.js.map
+
+// Project
+/**
+ *
+ */
+function tweenAction(args, elements, promiseHandler, action) {
+    var requireForcefeeding = void 0;
+    if (!elements) {
+        if (!args.length) {
+            console.info("Velocity(<element>, \"tween\", percentComplete, property, end | [end, <easing>, <start>], <easing>) => value\nVelocity(<element>, \"tween\", percentComplete, {property: end | [end, <easing>, <start>], ...}, <easing>) => {property: value, ...}");
+            return null;
+        }
+        elements = [document.body];
+        requireForcefeeding = true;
+    } else if (elements.length !== 1) {
+        // TODO: Allow more than a single element to return an array of results
+        throw new Error("VelocityJS: Cannot tween more than one element!");
+    }
+    var percentComplete = args[0],
+        fakeAnimation = {
+        elements: elements,
+        element: elements[0],
+        queue: false,
+        options: {
+            duration: 1000
+        },
+        tweens: null
+    },
+        result = {};
+    var properties = args[1],
+        singleResult = void 0,
+        maybeSequence = void 0,
+        easing = args[2],
+        count = 0;
+    if (isString(args[1])) {
+        if (SequencesObject && SequencesObject[args[1]]) {
+            maybeSequence = SequencesObject[args[1]];
+            properties = {};
+            easing = args[2];
+        } else {
+            singleResult = true;
+            properties = defineProperty({}, args[1], args[2]);
+            easing = args[3];
+        }
+    } else if (Array.isArray(args[1])) {
+        singleResult = true;
+        properties = {
+            tween: args[1]
+        };
+        easing = args[2];
+    }
+    if (!isNumber(percentComplete) || percentComplete < 0 || percentComplete > 1) {
+        throw new Error("VelocityJS: Must tween a percentage from 0 to 1!");
+    }
+    if (!isPlainObject(properties)) {
+        throw new Error("VelocityJS: Cannot tween an invalid property!");
+    }
+    if (requireForcefeeding) {
+        for (var property in properties) {
+            if (properties.hasOwnProperty(property) && (!Array.isArray(properties[property]) || properties[property].length < 2)) {
+                throw new Error("VelocityJS: When not supplying an element you must force-feed values: " + property);
+            }
+        }
+    }
+    var activeEasing = validateEasing(getValue(easing, defaults$1.easing), DEFAULT_DURATION);
+    if (maybeSequence) {
+        expandSequence(fakeAnimation, maybeSequence);
+    } else {
+        expandProperties(fakeAnimation, properties);
+    }
+    // tslint:disable-next-line:forin
+    for (var _property in fakeAnimation.tweens) {
+        // For every element, iterate through each property.
+        var propertyTween = fakeAnimation.tweens[_property],
+            sequence = propertyTween.sequence,
+            pattern = sequence.pattern;
+        var currentValue = "",
+            i = 0;
+        count++;
+        if (pattern) {
+            var easingComplete = (propertyTween.easing || activeEasing)(percentComplete, 0, 1, _property);
+            var best = 0;
+            for (var j = 0; j < sequence.length - 1; j++) {
+                if (sequence[j].percent < easingComplete) {
+                    best = j;
+                }
+            }
+            var tweenFrom = sequence[best],
+                tweenTo = sequence[best + 1] || tweenFrom,
+                tweenPercent = (percentComplete - tweenFrom.percent) / (tweenTo.percent - tweenFrom.percent),
+                tweenEasing = tweenTo.easing || linearEasing;
+            for (; i < pattern.length; i++) {
+                var startValue = tweenFrom[i];
+                if (startValue == null) {
+                    currentValue += pattern[i];
+                } else {
+                    var endValue = tweenTo[i];
+                    if (startValue === endValue) {
+                        currentValue += startValue;
+                    } else {
+                        // All easings must deal with numbers except for our internal ones.
+                        var value = tweenEasing(tweenPercent, startValue, endValue, _property);
+                        currentValue += pattern[i] === true ? Math.round(value) : value;
+                    }
+                }
+            }
+            result[_property] = currentValue;
+        }
+    }
+    if (singleResult && count === 1) {
+        for (var _property2 in result) {
+            if (result.hasOwnProperty(_property2)) {
+                return result[_property2];
+            }
+        }
+    }
+    return result;
+}
+registerAction(["tween", tweenAction], true);
+
+//# sourceMappingURL=_all.js.map
+
+// Project
+/**
+ * Converting from hex as it makes for a smaller file.
+ */
+var colorValues = {
+    aliceblue: 0xF0F8FF,
+    antiquewhite: 0xFAEBD7,
+    aqua: 0x00FFFF,
+    aquamarine: 0x7FFFD4,
+    azure: 0xF0FFFF,
+    beige: 0xF5F5DC,
+    bisque: 0xFFE4C4,
+    black: 0x000000,
+    blanchedalmond: 0xFFEBCD,
+    blue: 0x0000FF,
+    blueviolet: 0x8A2BE2,
+    brown: 0xA52A2A,
+    burlywood: 0xDEB887,
+    cadetblue: 0x5F9EA0,
+    chartreuse: 0x7FFF00,
+    chocolate: 0xD2691E,
+    coral: 0xFF7F50,
+    cornflowerblue: 0x6495ED,
+    cornsilk: 0xFFF8DC,
+    crimson: 0xDC143C,
+    cyan: 0x00FFFF,
+    darkblue: 0x00008B,
+    darkcyan: 0x008B8B,
+    darkgoldenrod: 0xB8860B,
+    darkgray: 0xA9A9A9,
+    darkgrey: 0xA9A9A9,
+    darkgreen: 0x006400,
+    darkkhaki: 0xBDB76B,
+    darkmagenta: 0x8B008B,
+    darkolivegreen: 0x556B2F,
+    darkorange: 0xFF8C00,
+    darkorchid: 0x9932CC,
+    darkred: 0x8B0000,
+    darksalmon: 0xE9967A,
+    darkseagreen: 0x8FBC8F,
+    darkslateblue: 0x483D8B,
+    darkslategray: 0x2F4F4F,
+    darkslategrey: 0x2F4F4F,
+    darkturquoise: 0x00CED1,
+    darkviolet: 0x9400D3,
+    deeppink: 0xFF1493,
+    deepskyblue: 0x00BFFF,
+    dimgray: 0x696969,
+    dimgrey: 0x696969,
+    dodgerblue: 0x1E90FF,
+    firebrick: 0xB22222,
+    floralwhite: 0xFFFAF0,
+    forestgreen: 0x228B22,
+    fuchsia: 0xFF00FF,
+    gainsboro: 0xDCDCDC,
+    ghostwhite: 0xF8F8FF,
+    gold: 0xFFD700,
+    goldenrod: 0xDAA520,
+    gray: 0x808080,
+    grey: 0x808080,
+    green: 0x008000,
+    greenyellow: 0xADFF2F,
+    honeydew: 0xF0FFF0,
+    hotpink: 0xFF69B4,
+    indianred: 0xCD5C5C,
+    indigo: 0x4B0082,
+    ivory: 0xFFFFF0,
+    khaki: 0xF0E68C,
+    lavender: 0xE6E6FA,
+    lavenderblush: 0xFFF0F5,
+    lawngreen: 0x7CFC00,
+    lemonchiffon: 0xFFFACD,
+    lightblue: 0xADD8E6,
+    lightcoral: 0xF08080,
+    lightcyan: 0xE0FFFF,
+    lightgoldenrodyellow: 0xFAFAD2,
+    lightgray: 0xD3D3D3,
+    lightgrey: 0xD3D3D3,
+    lightgreen: 0x90EE90,
+    lightpink: 0xFFB6C1,
+    lightsalmon: 0xFFA07A,
+    lightseagreen: 0x20B2AA,
+    lightskyblue: 0x87CEFA,
+    lightslategray: 0x778899,
+    lightslategrey: 0x778899,
+    lightsteelblue: 0xB0C4DE,
+    lightyellow: 0xFFFFE0,
+    lime: 0x00FF00,
+    limegreen: 0x32CD32,
+    linen: 0xFAF0E6,
+    magenta: 0xFF00FF,
+    maroon: 0x800000,
+    mediumaquamarine: 0x66CDAA,
+    mediumblue: 0x0000CD,
+    mediumorchid: 0xBA55D3,
+    mediumpurple: 0x9370DB,
+    mediumseagreen: 0x3CB371,
+    mediumslateblue: 0x7B68EE,
+    mediumspringgreen: 0x00FA9A,
+    mediumturquoise: 0x48D1CC,
+    mediumvioletred: 0xC71585,
+    midnightblue: 0x191970,
+    mintcream: 0xF5FFFA,
+    mistyrose: 0xFFE4E1,
+    moccasin: 0xFFE4B5,
+    navajowhite: 0xFFDEAD,
+    navy: 0x000080,
+    oldlace: 0xFDF5E6,
+    olive: 0x808000,
+    olivedrab: 0x6B8E23,
+    orange: 0xFFA500,
+    orangered: 0xFF4500,
+    orchid: 0xDA70D6,
+    palegoldenrod: 0xEEE8AA,
+    palegreen: 0x98FB98,
+    paleturquoise: 0xAFEEEE,
+    palevioletred: 0xDB7093,
+    papayawhip: 0xFFEFD5,
+    peachpuff: 0xFFDAB9,
+    peru: 0xCD853F,
+    pink: 0xFFC0CB,
+    plum: 0xDDA0DD,
+    powderblue: 0xB0E0E6,
+    purple: 0x800080,
+    rebeccapurple: 0x663399,
+    red: 0xFF0000,
+    rosybrown: 0xBC8F8F,
+    royalblue: 0x4169E1,
+    saddlebrown: 0x8B4513,
+    salmon: 0xFA8072,
+    sandybrown: 0xF4A460,
+    seagreen: 0x2E8B57,
+    seashell: 0xFFF5EE,
+    sienna: 0xA0522D,
+    silver: 0xC0C0C0,
+    skyblue: 0x87CEEB,
+    slateblue: 0x6A5ACD,
+    slategray: 0x708090,
+    slategrey: 0x708090,
+    snow: 0xFFFAFA,
+    springgreen: 0x00FF7F,
+    steelblue: 0x4682B4,
+    tan: 0xD2B48C,
+    teal: 0x008080,
+    thistle: 0xD8BFD8,
+    tomato: 0xFF6347,
+    turquoise: 0x40E0D0,
+    violet: 0xEE82EE,
+    wheat: 0xF5DEB3,
+    white: 0xFFFFFF,
+    whitesmoke: 0xF5F5F5,
+    yellow: 0xFFFF00,
+    yellowgreen: 0x9ACD32
+};
+for (var name in colorValues) {
+    if (colorValues.hasOwnProperty(name)) {
+        var color = colorValues[name];
+        ColorNames[name] = Math.floor(color / 65536) + "," + Math.floor(color / 256 % 256) + "," + color % 256;
+    }
+}
+//# sourceMappingURL=colors.js.map
+
+//# sourceMappingURL=_all.js.map
+
+// Project
+function registerBackIn(name, amount) {
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        return Math.pow(percentComplete, 2) * ((amount + 1) * percentComplete - amount) * (endValue - startValue);
+    }]);
+}
+function registerBackOut(name, amount) {
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        return (Math.pow(--percentComplete, 2) * ((amount + 1) * percentComplete + amount) + 1) * (endValue - startValue);
+    }]);
+}
+function registerBackInOut(name, amount) {
+    amount *= 1.525;
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        percentComplete *= 2;
+        return (percentComplete < 1 ? Math.pow(percentComplete, 2) * ((amount + 1) * percentComplete - amount) : Math.pow(percentComplete - 2, 2) * ((amount + 1) * (percentComplete - 2) + amount) + 2) * 0.5 * (endValue - startValue);
+    }]);
+}
+registerBackIn("easeInBack", 1.7);
+registerBackOut("easeOutBack", 1.7);
+registerBackInOut("easeInOutBack", 1.7);
+// TODO: Expose these as actions to register custom easings?
+//# sourceMappingURL=back.js.map
+
+// Project
+function easeOutBouncePercent(percentComplete) {
+    if (percentComplete < 1 / 2.75) {
+        return 7.5625 * percentComplete * percentComplete;
+    }
+    if (percentComplete < 2 / 2.75) {
+        return 7.5625 * (percentComplete -= 1.5 / 2.75) * percentComplete + 0.75;
+    }
+    if (percentComplete < 2.5 / 2.75) {
+        return 7.5625 * (percentComplete -= 2.25 / 2.75) * percentComplete + 0.9375;
+    }
+    return 7.5625 * (percentComplete -= 2.625 / 2.75) * percentComplete + 0.984375;
+}
+function easeInBouncePercent(percentComplete) {
+    return 1 - easeOutBouncePercent(1 - percentComplete);
+}
+function easeInBounce(percentComplete, startValue, endValue) {
+    if (percentComplete === 0) {
+        return startValue;
+    }
+    if (percentComplete === 1) {
+        return endValue;
+    }
+    return easeInBouncePercent(percentComplete) * (endValue - startValue);
+}
+function easeOutBounce(percentComplete, startValue, endValue) {
+    if (percentComplete === 0) {
+        return startValue;
+    }
+    if (percentComplete === 1) {
+        return endValue;
+    }
+    return easeOutBouncePercent(percentComplete) * (endValue - startValue);
+}
+function easeInOutBounce(percentComplete, startValue, endValue) {
+    if (percentComplete === 0) {
+        return startValue;
+    }
+    if (percentComplete === 1) {
+        return endValue;
+    }
+    return (percentComplete < 0.5 ? easeInBouncePercent(percentComplete * 2) * 0.5 : easeOutBouncePercent(percentComplete * 2 - 1) * 0.5 + 0.5) * (endValue - startValue);
+}
+registerEasing(["easeInBounce", easeInBounce]);
+registerEasing(["easeOutBounce", easeOutBounce]);
+registerEasing(["easeInOutBounce", easeInOutBounce]);
+//# sourceMappingURL=bounce.js.map
+
+// Project
+// Constants
+var PI2 = Math.PI * 2;
+function registerElasticIn(name, amplitude, period) {
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        return -(amplitude * Math.pow(2, 10 * (percentComplete -= 1)) * Math.sin((percentComplete - period / PI2 * Math.asin(1 / amplitude)) * PI2 / period)) * (endValue - startValue);
+    }]);
+}
+function registerElasticOut(name, amplitude, period) {
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        return (amplitude * Math.pow(2, -10 * percentComplete) * Math.sin((percentComplete - period / PI2 * Math.asin(1 / amplitude)) * PI2 / period) + 1) * (endValue - startValue);
+    }]);
+}
+function registerElasticInOut(name, amplitude, period) {
+    registerEasing([name, function (percentComplete, startValue, endValue) {
+        if (percentComplete === 0) {
+            return startValue;
+        }
+        if (percentComplete === 1) {
+            return endValue;
+        }
+        var s = period / PI2 * Math.asin(1 / amplitude);
+        percentComplete = percentComplete * 2 - 1;
+        return (percentComplete < 0 ? -0.5 * (amplitude * Math.pow(2, 10 * percentComplete) * Math.sin((percentComplete - s) * PI2 / period)) : amplitude * Math.pow(2, -10 * percentComplete) * Math.sin((percentComplete - s) * PI2 / period) * 0.5 + 1) * (endValue - startValue);
+    }]);
+}
+registerElasticIn("easeInElastic", 1, 0.3);
+registerElasticOut("easeOutElastic", 1, 0.3);
+registerElasticInOut("easeInOutElastic", 1, 0.3 * 1.5);
+// TODO: Expose these as actions to register custom easings?
+//# sourceMappingURL=elastic.js.map
+
+// Project
+/**
+ * Easing function that sets to the specified value immediately after the
+ * animation starts.
+ */
+function atStart(percentComplete, startValue, endValue) {
+  return percentComplete === 0 ? startValue : endValue;
+}
+/**
+ * Easing function that sets to the specified value while the animation is
+ * running.
+ */
+function during(percentComplete, startValue, endValue) {
+  return percentComplete === 0 || percentComplete === 1 ? startValue : endValue;
+}
+/**
+ * Easing function that sets to the specified value when the animation ends.
+ */
+function atEnd(percentComplete, startValue, endValue) {
+  return percentComplete === 1 ? endValue : startValue;
+}
+registerEasing(["at-start", atStart]);
+registerEasing(["during", during]);
+registerEasing(["at-end", atEnd]);
+//# sourceMappingURL=string.js.map
+
+//# sourceMappingURL=_all.js.map
+
+// Project
+/**
+ * Get/set the inner/outer dimension.
+ */
+function getDimension(name, wantInner) {
+    return function (element, propertyValue) {
+        if (propertyValue === undefined) {
+            return augmentDimension(element, name, wantInner) + "px";
+        }
+        setPropertyValue(element, name, parseFloat(propertyValue) - augmentDimension(element, name, wantInner) + "px");
+    };
+}
+registerNormalization(["Element", "innerWidth", getDimension("width", true)]);
+registerNormalization(["Element", "innerHeight", getDimension("height", true)]);
+registerNormalization(["Element", "outerWidth", getDimension("width", false)]);
+registerNormalization(["Element", "outerHeight", getDimension("height", false)]);
+//# sourceMappingURL=dimensions.js.map
+
+// Project
+// Constants
+var inlineRx = /^(b|big|i|small|tt|abbr|acronym|cite|code|dfn|em|kbd|strong|samp|let|a|bdo|br|img|map|object|q|script|span|sub|sup|button|input|label|select|textarea)$/i,
+    listItemRx = /^(li)$/i,
+    tableRowRx = /^(tr)$/i,
+    tableRx = /^(table)$/i,
+    tableRowGroupRx = /^(tbody)$/i;
+function display(element, propertyValue) {
+    var style = element.style;
+    if (propertyValue === undefined) {
+        return computePropertyValue(element, "display");
+    }
+    if (propertyValue === "auto") {
+        var nodeName = element && element.nodeName,
+            data = Data(element);
+        if (inlineRx.test(nodeName)) {
+            propertyValue = "inline";
+        } else if (listItemRx.test(nodeName)) {
+            propertyValue = "list-item";
+        } else if (tableRowRx.test(nodeName)) {
+            propertyValue = "table-row";
+        } else if (tableRx.test(nodeName)) {
+            propertyValue = "table";
+        } else if (tableRowGroupRx.test(nodeName)) {
+            propertyValue = "table-row-group";
+        } else {
+            // Default to "block" when no match is found.
+            propertyValue = "block";
+        }
+        // IMPORTANT: We need to do this as getPropertyValue bypasses the
+        // Normalisation when it exists in the cache.
+        data.cache["display"] = propertyValue;
+    }
+    style.display = propertyValue;
+}
+registerNormalization(["Element", "display", display]);
+//# sourceMappingURL=display.js.map
+
+// Project
+function clientWidth(element, propertyValue) {
+    if (propertyValue == null) {
+        return element.clientWidth + "px";
+    }
+}
+function scrollWidth(element, propertyValue) {
+    if (propertyValue == null) {
+        return element.scrollWidth + "px";
+    }
+}
+function clientHeight(element, propertyValue) {
+    if (propertyValue == null) {
+        return element.clientHeight + "px";
+    }
+}
+function scrollHeight(element, propertyValue) {
+    if (propertyValue == null) {
+        return element.scrollHeight + "px";
+    }
+}
+function scroll(direction, end) {
+    return function (element, propertyValue) {
+        if (propertyValue == null) {
+            // Make sure we have these values cached.
+            getPropertyValue(element, "client" + direction, null, true);
+            getPropertyValue(element, "scroll" + direction, null, true);
+            return element["scroll" + end] + "px";
+        }
+        var value = parseFloat(propertyValue),
+            unit = propertyValue.replace(String(value), "");
+        switch (unit) {
+            case "":
+            case "px":
+                element["scroll" + end] = value;
+                break;
+            case "%":
+                var client = parseFloat(getPropertyValue(element, "client" + direction)),
+                    scrollValue = parseFloat(getPropertyValue(element, "scroll" + direction));
+                element["scroll" + end] = Math.max(0, scrollValue - client) * value / 100;
+                break;
+        }
+    };
+}
+registerNormalization(["HTMLElement", "scroll", scroll("Height", "Top"), false]);
+registerNormalization(["HTMLElement", "scrollTop", scroll("Height", "Top"), false]);
+registerNormalization(["HTMLElement", "scrollLeft", scroll("Width", "Left"), false]);
+registerNormalization(["HTMLElement", "scrollWidth", scrollWidth]);
+registerNormalization(["HTMLElement", "clientWidth", clientWidth]);
+registerNormalization(["HTMLElement", "scrollHeight", scrollHeight]);
+registerNormalization(["HTMLElement", "clientHeight", clientHeight]);
+//# sourceMappingURL=scroll.js.map
+
+// Project
+/**
+ * An RegExp pattern for the following list of css words using
+ * http://kemio.com.ar/tools/lst-trie-re.php to generate:
+ *
+ * blockSize
+ * borderBottomLeftRadius
+ * borderBottomRightRadius
+ * borderBottomWidth
+ * borderImageOutset
+ * borderImageWidth
+ * borderLeftWidth
+ * borderRadius
+ * borderRightWidth
+ * borderSpacing
+ * borderTopLeftRadius
+ * borderTopRightRadius
+ * borderTopWidth
+ * borderWidth
+ * bottom
+ * columnGap
+ * columnRuleWidth
+ * columnWidth
+ * flexBasis
+ * fontSize
+ * gridColumnGap
+ * gridGap
+ * gridRowGap
+ * height
+ * inlineSize
+ * left
+ * letterSpacing
+ * margin
+ * marginBottom
+ * marginLeft
+ * marginRight
+ * marginTop
+ * maxBlockSize
+ * maxHeight
+ * maxInlineSize
+ * maxWidth
+ * minBlockSize
+ * minHeight
+ * minInlineSize
+ * minWidth
+ * objectPosition
+ * outlineOffset
+ * outlineWidth
+ * padding
+ * paddingBottom
+ * paddingLeft
+ * paddingRight
+ * paddingTop
+ * perspective
+ * right
+ * shapeMargin
+ * strokeDashoffset
+ * strokeWidth
+ * textIndent
+ * top
+ * transformOrigin
+ * width
+ * wordSpacing
+ */
+// tslint:disable-next-line:max-line-length
+var rxAddPx = /^(b(lockSize|o(rder(Bottom(LeftRadius|RightRadius|Width)|Image(Outset|Width)|LeftWidth|R(adius|ightWidth)|Spacing|Top(LeftRadius|RightRadius|Width)|Width)|ttom))|column(Gap|RuleWidth|Width)|f(lexBasis|ontSize)|grid(ColumnGap|Gap|RowGap)|height|inlineSize|le(ft|tterSpacing)|m(a(rgin(Bottom|Left|Right|Top)|x(BlockSize|Height|InlineSize|Width))|in(BlockSize|Height|InlineSize|Width))|o(bjectPosition|utline(Offset|Width))|p(adding(Bottom|Left|Right|Top)|erspective)|right|s(hapeMargin|troke(Dashoffset|Width))|t(extIndent|op|ransformOrigin)|w(idth|ordSpacing))$/;
+/**
+ * Return a Normalisation that can be used to set / get a prefixed style
+ * property.
+ */
+function getSetPrefixed(propertyName, unprefixed) {
+    return function (element, propertyValue) {
+        if (propertyValue === undefined) {
+            return computePropertyValue(element, propertyName) || computePropertyValue(element, unprefixed);
+        }
+        element.style[propertyName] = element.style[unprefixed] = propertyValue;
+    };
+}
+/**
+ * Return a Normalisation that can be used to set / get a style property.
+ */
+function getSetStyle(propertyName) {
+    return function (element, propertyValue) {
+        if (propertyValue === undefined) {
+            return computePropertyValue(element, propertyName);
+        }
+        element.style[propertyName] = propertyValue;
+    };
+}
+/**
+ * Vendor prefixes. Chrome / Safari, Firefox, IE / Edge, Opera.
+ */
+var rxVendors = /^(webkit|moz|ms|o)[A-Z]/,
+    prefixElement = State.prefixElement;
+if (prefixElement) {
+    for (var propertyName in prefixElement.style) {
+        if (rxVendors.test(propertyName)) {
+            var unprefixed = propertyName.replace(/^[a-z]+([A-Z])/, function ($, letter) {
+                return letter.toLowerCase();
+            });
+            {
+                var addUnit = rxAddPx.test(unprefixed) ? "px" : undefined;
+                registerNormalization(["Element", unprefixed, getSetPrefixed(propertyName, unprefixed), addUnit]);
+            }
+        } else if (!hasNormalization(["Element", propertyName])) {
+            var _addUnit = rxAddPx.test(propertyName) ? "px" : undefined;
+            registerNormalization(["Element", propertyName, getSetStyle(propertyName), _addUnit]);
+        }
+    }
+}
+//# sourceMappingURL=style.js.map
+
+// Project
+/**
+ * Get/set an attribute.
+ */
+function getAttribute(name) {
+    return function (element, propertyValue) {
+        if (propertyValue === undefined) {
+            return element.getAttribute(name);
+        }
+        element.setAttribute(name, propertyValue);
+    };
+}
+var base = document.createElement("div"),
+    rxSubtype = /^SVG(.*)Element$/,
+    rxElement = /Element$/;
+Object.getOwnPropertyNames(window).forEach(function (property) {
+    var subtype = rxSubtype.exec(property);
+    if (subtype && subtype[1] !== "SVG") {
+        // Don't do SVGSVGElement.
+        try {
+            var element = subtype[1] ? document.createElementNS("http://www.w3.org/2000/svg", (subtype[1] || "svg").toLowerCase()) : document.createElement("svg");
+            // tslint:disable-next-line:forin
+            for (var attribute in element) {
+                // Although this isn't a tween without prototypes, we do
+                // want to get hold of all attributes and not just own ones.
+                var value = element[attribute];
+                if (isString(attribute) && !(attribute[0] === "o" && attribute[1] === "n") && attribute !== attribute.toUpperCase() && !rxElement.test(attribute) && !(attribute in base) && !isFunction(value)) {
+                    // TODO: Should this all be set on the generic SVGElement, it would save space and time, but not as powerful
+                    registerNormalization([property, attribute, getAttribute(attribute)]);
+                }
+            }
+        } catch (e) {
+            console.error("VelocityJS: Error when trying to identify SVG attributes on " + property + ".", e);
+        }
+    }
+});
+//# sourceMappingURL=attributes.js.map
+
+// Project
+/**
+ * Get/set the width or height.
+ */
+function getDimension$1(name) {
+    return function (element, propertyValue) {
+        if (propertyValue === undefined) {
+            // Firefox throws an error if .getBBox() is called on an SVG that isn't attached to the DOM.
+            try {
+                return element.getBBox()[name] + "px";
+            } catch (e) {
+                return "0px";
+            }
+        }
+        element.setAttribute(name, propertyValue);
+    };
+}
+registerNormalization(["SVGElement", "width", getDimension$1("width")]);
+registerNormalization(["SVGElement", "height", getDimension$1("height")]);
+//# sourceMappingURL=dimensions.js.map
+
+//# sourceMappingURL=_all.js.map
+
+// Project
+/**
+ * A fake normalization used to allow the "tween" property easy access.
+ */
+function getSetTween(element, propertyValue) {
+    if (propertyValue === undefined) {
+        return "";
+    }
+}
+registerNormalization(["Element", "tween", getSetTween]);
+//# sourceMappingURL=tween.js.map
+
+//# sourceMappingURL=_all.js.map
+
+//# sourceMappingURL=_all.js.map
+
+// Automatically generated
+var VERSION = "2.0.6";
+//# sourceMappingURL=version.js.map
+
+// Project
+var Velocity$1 = Velocity;
 /**
  * These parts of Velocity absolutely must be included, even if they're unused!
  */
-var VelocityStatic$1;
+var VelocityStatic;
 (function (VelocityStatic) {
     /**
      * Actions cannot be replaced if they are internal (hasOwnProperty is false
@@ -4767,10 +4744,10 @@ var VelocityStatic$1;
     /**
      * Added as a fallback for "import {Velocity} from 'velocity-animate';".
      */
-    VelocityStatic.Velocity = Velocity$1; // tslint:disable-line:no-shadowed-variable
-})(VelocityStatic$1 || (VelocityStatic$1 = {}));
+    VelocityStatic.Velocity = Velocity; // tslint:disable-line:no-shadowed-variable
+})(VelocityStatic || (VelocityStatic = {}));
 /* IE detection. Gist: https://gist.github.com/julianshapiro/9098609 */
-var IE$1 = function () {
+var IE = function () {
     if (document.documentMode) {
         return document.documentMode;
     } else {
@@ -4788,7 +4765,7 @@ var IE$1 = function () {
 /******************
  Unsupported
  ******************/
-if (IE$1 <= 8) {
+if (IE <= 8) {
     throw new Error("VelocityJS cannot run on Internet Explorer 8 or earlier");
 }
 /******************
@@ -4805,44 +4782,44 @@ if (window) {
      * both act on wrapped DOM elements and stand alone for targeting raw DOM
      * elements.
      */
-    var jQuery$1 = window.jQuery,
-        Zepto$1 = window.Zepto;
+    var jQuery = window.jQuery,
+        Zepto = window.Zepto;
     patch(window, true);
     patch(Element && Element.prototype);
     patch(NodeList && NodeList.prototype);
     patch(HTMLCollection && HTMLCollection.prototype);
-    patch(jQuery$1, true);
-    patch(jQuery$1 && jQuery$1.fn);
-    patch(Zepto$1, true);
-    patch(Zepto$1 && Zepto$1.fn);
+    patch(jQuery, true);
+    patch(jQuery && jQuery.fn);
+    patch(Zepto, true);
+    patch(Zepto && Zepto.fn);
 }
 // Make sure that the values within Velocity are read-only and upatchable.
 
-var _loop$1 = function _loop(property) {
-    if (VelocityStatic$1.hasOwnProperty(property)) {
+var _loop = function _loop(property) {
+    if (VelocityStatic.hasOwnProperty(property)) {
         switch (typeof property === "undefined" ? "undefined" : _typeof(property)) {
             case "number":
             case "boolean":
-                defineProperty$1(Velocity$2, property, {
+                defineProperty$1(Velocity$1, property, {
                     get: function get$$1() {
-                        return VelocityStatic$1[property];
+                        return VelocityStatic[property];
                     },
                     set: function set$$1(value) {
-                        VelocityStatic$1[property] = value;
+                        VelocityStatic[property] = value;
                     }
                 }, true);
                 break;
             default:
-                defineProperty$1(Velocity$2, property, VelocityStatic$1[property], true);
+                defineProperty$1(Velocity$1, property, VelocityStatic[property], true);
                 break;
         }
     }
 };
 
-for (var property$1 in VelocityStatic$1) {
-    _loop$1(property$1);
+for (var property in VelocityStatic) {
+    _loop(property);
 }
-Object.freeze(Velocity$2);
+Object.freeze(Velocity$1);
 
-export default Velocity$2;
+export default Velocity$1;
 //# sourceMappingURL=velocity.es5.js.map
