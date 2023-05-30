@@ -43,7 +43,7 @@ export function setPropertyValue(element: HTMLorSVGElement, propertyName: string
     }
   }
 
-  console.log(propertyName, pValue, 56555);
+  console.log({ value: propertyValue, name: propertyName, pValue });
 	const noCache = NoCacheNormalizations.has(propertyName),
         data    = !noCache && Data(element);
 

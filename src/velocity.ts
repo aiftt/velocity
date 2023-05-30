@@ -28,6 +28,7 @@ import "./Velocity/_all";
 // Constants
 import { VERSION } from "../version";
 const Velocity: VelocityPublic = VelocityFn as any;
+Velocity.debug = 2;
 
 /**
  * These parts of Velocity absolutely must be included, even if they're unused!

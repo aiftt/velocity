@@ -30,6 +30,7 @@
 	        transform: "translate3d(0,-4px,0)"
 	    }
 	});
+	//# sourceMappingURL=bounce.js.map
 
 	Velocity("registerSequence", "flash", {
 	    "duration": 1000,
@@ -40,6 +41,7 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=flash.js.map
 
 	Velocity("registerSequence", "headShake", {
 	    "duration": 1000,
@@ -63,6 +65,7 @@
 	        transform: "translateX(0) rotateY(0)"
 	    }
 	});
+	//# sourceMappingURL=headShake.js.map
 
 	Velocity("registerSequence", "jello", {
 	    "duration": 1000,
@@ -94,6 +97,7 @@
 	        transform: "skewX(-0.1953125deg) skewY(-0.1953125deg)"
 	    }
 	});
+	//# sourceMappingURL=jello.js.map
 
 	Velocity("registerSequence", "pulse", {
 	    "duration": 1000,
@@ -107,6 +111,7 @@
 	        transform: "scale3d(1,1,1)"
 	    }
 	});
+	//# sourceMappingURL=pulse.js.map
 
 	Velocity("registerSequence", "rubberBand", {
 	    "duration": 1000,
@@ -132,6 +137,7 @@
 	        transform: "scale3d(1,1,1)"
 	    }
 	});
+	//# sourceMappingURL=rubberBand.js.map
 
 	Velocity("registerSequence", "shake", {
 	    "duration": 1000,
@@ -145,6 +151,7 @@
 	        transform: "translate3d(10px,0,0)"
 	    }
 	});
+	//# sourceMappingURL=shake.js.map
 
 	Velocity("registerSequence", "swing", {
 	    "duration": 1000,
@@ -209,6 +216,9 @@
 	        transform: "translate3d(0,0,0) rotate3d(0,0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=wobble.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "bounceIn", {
 	    "duration": 750,
@@ -235,6 +245,7 @@
 	        transform: "scale3d(1,1,1)"
 	    }
 	});
+	//# sourceMappingURL=bounceIn.js.map
 
 	Velocity("registerSequence", "bounceInDown", {
 	    "duration": 1000,
@@ -256,6 +267,7 @@
 	        transform: ["translate3d(0,0,0)", "easeOutCubic"]
 	    }
 	});
+	//# sourceMappingURL=bounceInDown.js.map
 
 	Velocity("registerSequence", "bounceInLeft", {
 	    "duration": 1000,
@@ -277,6 +289,7 @@
 	        transform: ["translate3d(0,0,0)", "easeOutCubic"]
 	    }
 	});
+	//# sourceMappingURL=bounceInLeft.js.map
 
 	Velocity("registerSequence", "bounceInRight", {
 	    "duration": 1000,
@@ -298,6 +311,7 @@
 	        transform: ["translate3d(0,0,0)", "easeOutCubic"]
 	    }
 	});
+	//# sourceMappingURL=bounceInRight.js.map
 
 	Velocity("registerSequence", "bounceInUp", {
 	    "duration": 1000,
@@ -319,6 +333,9 @@
 	        transform: ["translate3d(0,0,0)", "easeOutCubic"]
 	    }
 	});
+	//# sourceMappingURL=bounceInUp.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "bounceOut", {
 	    "duration": 750,
@@ -338,6 +355,7 @@
 	        transform: "scale3d(0.3,0.3,0.3)"
 	    }
 	});
+	//# sourceMappingURL=bounceOut.js.map
 
 	Velocity("registerSequence", "bounceOutDown", {
 	    "duration": 1000,
@@ -357,6 +375,7 @@
 	        transform: "translate3d(0,2000px,0)"
 	    }
 	});
+	//# sourceMappingURL=bounceOutDown.js.map
 
 	Velocity("registerSequence", "bounceOutLeft", {
 	    "duration": 1000,
@@ -373,6 +392,7 @@
 	        transform: "translate3d(-2000px,0,0)"
 	    }
 	});
+	//# sourceMappingURL=bounceOutLeft.js.map
 
 	Velocity("registerSequence", "bounceOutRight", {
 	    "duration": 1000,
@@ -389,6 +409,7 @@
 	        transform: "translate3d(2000px,0,0)"
 	    }
 	});
+	//# sourceMappingURL=bounceOutRight.js.map
 
 	Velocity("registerSequence", "bounceOutUp", {
 	    "duration": 1000,
@@ -408,6 +429,9 @@
 	        transform: "translate3d(0,-2000px,0)"
 	    }
 	});
+	//# sourceMappingURL=bounceOutUp.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "fadeIn", {
 	    "duration": 1000,
@@ -418,6 +442,7 @@
 	        opacity: "1"
 	    }
 	});
+	//# sourceMappingURL=fadeIn.js.map
 
 	Velocity("registerSequence", "fadeInDown", {
 	    "duration": 1000,
@@ -430,6 +455,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInDown.js.map
 
 	Velocity("registerSequence", "fadeInDownBig", {
 	    "duration": 1000,
@@ -442,6 +468,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInDownBig.js.map
 
 	Velocity("registerSequence", "fadeInLeft", {
 	    "duration": 1000,
@@ -454,6 +481,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInLeft.js.map
 
 	Velocity("registerSequence", "fadeInLeftBig", {
 	    "duration": 1000,
@@ -466,6 +494,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInLeftBig.js.map
 
 	Velocity("registerSequence", "fadeInRight", {
 	    "duration": 1000,
@@ -478,6 +507,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInRight.js.map
 
 	Velocity("registerSequence", "fadeInRightBig", {
 	    "duration": 1000,
@@ -490,6 +520,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInRightBig.js.map
 
 	Velocity("registerSequence", "fadeInUp", {
 	    "duration": 1000,
@@ -502,6 +533,7 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInUp.js.map
 
 	Velocity("registerSequence", "fadeInUpBig", {
 	    "duration": 1000,
@@ -514,6 +546,9 @@
 	        transform: "translate3d(0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeInUpBig.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "fadeOut", {
 	    "duration": 1000,
@@ -524,6 +559,7 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=fadeOut.js.map
 
 	Velocity("registerSequence", "fadeOutDown", {
 	    "duration": 1000,
@@ -536,6 +572,7 @@
 	        transform: "translate3d(0,100%,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutDown.js.map
 
 	Velocity("registerSequence", "fadeOutDownBig", {
 	    "duration": 1000,
@@ -548,6 +585,7 @@
 	        transform: "translate3d(0,2000px,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutDownBig.js.map
 
 	Velocity("registerSequence", "fadeOutLeft", {
 	    "duration": 1000,
@@ -560,6 +598,7 @@
 	        transform: "translate3d(-100%,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutLeft.js.map
 
 	Velocity("registerSequence", "fadeOutLeftBig", {
 	    "duration": 1000,
@@ -572,6 +611,7 @@
 	        transform: "translate3d(-2000px,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutLeftBig.js.map
 
 	Velocity("registerSequence", "fadeOutRight", {
 	    "duration": 1000,
@@ -584,6 +624,7 @@
 	        transform: "translate3d(100%,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutRight.js.map
 
 	Velocity("registerSequence", "fadeOutRightBig", {
 	    "duration": 1000,
@@ -596,6 +637,7 @@
 	        transform: "translate3d(2000px,0,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutRightBig.js.map
 
 	Velocity("registerSequence", "fadeOutUp", {
 	    "duration": 1000,
@@ -608,6 +650,7 @@
 	        transform: "translate3d(0,-100%,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutUp.js.map
 
 	Velocity("registerSequence", "fadeOutUpBig", {
 	    "duration": 1000,
@@ -620,6 +663,9 @@
 	        transform: "translate3d(0,-2000px,0)"
 	    }
 	});
+	//# sourceMappingURL=fadeOutUpBig.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "flip", {
 	    "duration": 1000,
@@ -642,6 +688,7 @@
 	        transform: ["perspective(400px) translate3d(0,0,0) rotate3d(0,0,0,0) scale3d(1,1,1)", "ease-in"]
 	    }
 	});
+	//# sourceMappingURL=flip.js.map
 
 	Velocity("registerSequence", "flipInX", {
 	    "duration": 1000,
@@ -666,6 +713,7 @@
 	        transform: "perspective(400px) rotate3d(1,0,0,0)"
 	    }
 	});
+	//# sourceMappingURL=flipInX.js.map
 
 	Velocity("registerSequence", "flipInY", {
 	    "duration": 1000,
@@ -690,6 +738,7 @@
 	        transform: "perspective(400px) rotate3d(0,1,0,0)"
 	    }
 	});
+	//# sourceMappingURL=flipInY.js.map
 
 	Velocity("registerSequence", "flipOutX", {
 	    "duration": 750,
@@ -708,6 +757,7 @@
 	        transform: "perspective(400px) rotate3d(1,0,0,90deg)"
 	    }
 	});
+	//# sourceMappingURL=flipOutX.js.map
 
 	Velocity("registerSequence", "flipOutY", {
 	    "duration": 750,
@@ -726,6 +776,9 @@
 	        transform: "perspective(400px) rotate3d(0,1,0,90deg)"
 	    }
 	});
+	//# sourceMappingURL=flipOutY.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "lightSpeedIn", {
 	    "duration": 1000,
@@ -747,6 +800,7 @@
 	        transform: "translate3d(0,0,0) skew(0)"
 	    }
 	});
+	//# sourceMappingURL=lightSpeedIn.js.map
 
 	Velocity("registerSequence", "lightSpeedOut", {
 	    "duration": 1000,
@@ -760,6 +814,9 @@
 	        transform: "translate3d(100%,0,0) skewX(30deg)"
 	    }
 	});
+	//# sourceMappingURL=lightSpeedOut.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "rotateIn", {
 	    "duration": 1000,
@@ -774,6 +831,7 @@
 	        transformOrigin: "center"
 	    }
 	});
+	//# sourceMappingURL=rotateIn.js.map
 
 	Velocity("registerSequence", "rotateInDownLeft", {
 	    "duration": 1000,
@@ -788,6 +846,7 @@
 	        transformOrigin: "left bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateInDownLeft.js.map
 
 	Velocity("registerSequence", "rotateInDownRight", {
 	    "duration": 1000,
@@ -802,6 +861,7 @@
 	        transformOrigin: "right bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateInDownRight.js.map
 
 	Velocity("registerSequence", "rotateInUpLeft", {
 	    "duration": 1000,
@@ -816,6 +876,7 @@
 	        transformOrigin: "left bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateInUpLeft.js.map
 
 	Velocity("registerSequence", "rotateInUpRight", {
 	    "duration": 1000,
@@ -830,6 +891,9 @@
 	        transformOrigin: "right bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateInUpRight.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "rotateOut", {
 	    "duration": 1000,
@@ -844,6 +908,7 @@
 	        transformOrigin: "center"
 	    }
 	});
+	//# sourceMappingURL=rotateOut.js.map
 
 	Velocity("registerSequence", "rotateOutDownLeft", {
 	    "duration": 1000,
@@ -858,6 +923,7 @@
 	        transformOrigin: "left bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateOutDownLeft.js.map
 
 	Velocity("registerSequence", "rotateOutDownRight", {
 	    "duration": 1000,
@@ -872,6 +938,7 @@
 	        transformOrigin: "right bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateOutDownRight.js.map
 
 	Velocity("registerSequence", "rotateOutUpLeft", {
 	    "duration": 1000,
@@ -886,6 +953,7 @@
 	        transformOrigin: "left bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateOutUpLeft.js.map
 
 	Velocity("registerSequence", "rotateOutUpRight", {
 	    "duration": 1000,
@@ -900,6 +968,9 @@
 	        transformOrigin: "right bottom"
 	    }
 	});
+	//# sourceMappingURL=rotateOutUpRight.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "slideInDown", {
 	    "duration": 1000,
@@ -914,6 +985,7 @@
 	        opacity: "1"
 	    }
 	});
+	//# sourceMappingURL=slideInDown.js.map
 
 	Velocity("registerSequence", "slideInLeft", {
 	    "duration": 1000,
@@ -928,6 +1000,7 @@
 	        opacity: "1"
 	    }
 	});
+	//# sourceMappingURL=slideInLeft.js.map
 
 	Velocity("registerSequence", "slideInRight", {
 	    "duration": 1000,
@@ -942,6 +1015,7 @@
 	        opacity: "1"
 	    }
 	});
+	//# sourceMappingURL=slideInRight.js.map
 
 	Velocity("registerSequence", "slideInUp", {
 	    "duration": 1000,
@@ -956,6 +1030,9 @@
 	        opacity: "1"
 	    }
 	});
+	//# sourceMappingURL=slideInUp.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "slideOutDown", {
 	    "duration": 1000,
@@ -970,6 +1047,7 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=slideOutDown.js.map
 
 	Velocity("registerSequence", "slideOutLeft", {
 	    "duration": 1000,
@@ -984,6 +1062,7 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=slideOutLeft.js.map
 
 	Velocity("registerSequence", "slideOutRight", {
 	    "duration": 1000,
@@ -998,6 +1077,7 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=slideOutRight.js.map
 
 	Velocity("registerSequence", "slideOutUp", {
 	    "duration": 1000,
@@ -1012,6 +1092,9 @@
 	        opacity: "0"
 	    }
 	});
+	//# sourceMappingURL=slideOutUp.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "hinge", {
 	    "duration": 2000,
@@ -1032,6 +1115,7 @@
 	        transform: ["translate3d(0,700px,0) rotate3d(0,0,1,80deg)", "easeInOut"]
 	    }
 	});
+	//# sourceMappingURL=hinge.js.map
 
 	Velocity("registerSequence", "jackInTheBox", {
 	    "duration": 1000,
@@ -1051,6 +1135,7 @@
 	        transform: "scale(1) rotate(0)"
 	    }
 	});
+	//# sourceMappingURL=jackInTheBox.js.map
 
 	Velocity("registerSequence", "rollIn", {
 	    "duration": 1000,
@@ -1063,6 +1148,7 @@
 	        transform: "translate3d(0,0,0) rotate3d(0,0,1,0)"
 	    }
 	});
+	//# sourceMappingURL=rollIn.js.map
 
 	Velocity("registerSequence", "rollOut", {
 	    "duration": 1000,
@@ -1075,6 +1161,9 @@
 	        transform: "translate3d(100%,0,0) rotate3d(0,0,1,120deg)"
 	    }
 	});
+	//# sourceMappingURL=rollOut.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "zoomIn", {
 	    "duration": 1000,
@@ -1089,6 +1178,7 @@
 	        transform: "scale3d(1,1,1)"
 	    }
 	});
+	//# sourceMappingURL=zoomIn.js.map
 
 	Velocity("registerSequence", "zoomInDown", {
 	    "duration": 1000,
@@ -1104,6 +1194,7 @@
 	        transform: ["scale3d(1,1,1) translate3d(0,0,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomInDown.js.map
 
 	Velocity("registerSequence", "zoomInLeft", {
 	    "duration": 1000,
@@ -1119,6 +1210,7 @@
 	        transform: ["scale3d(1,1,1) translate3d(0,0,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomInLeft.js.map
 
 	Velocity("registerSequence", "zoomInRight", {
 	    "duration": 1000,
@@ -1134,6 +1226,7 @@
 	        transform: ["scale3d(1,1,1) translate3d(0,0,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomInRight.js.map
 
 	Velocity("registerSequence", "zoomInUp", {
 	    "duration": 1000,
@@ -1149,6 +1242,9 @@
 	        transform: ["scale3d(1,1,1) translate3d(0,0,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomInUp.js.map
+
+	//# sourceMappingURL=_all.js.map
 
 	Velocity("registerSequence", "zoomOut", {
 	    "duration": 1000,
@@ -1163,6 +1259,7 @@
 	        transform: "scale3d(0.3,0.3,0.3)"
 	    }
 	});
+	//# sourceMappingURL=zoomOut.js.map
 
 	Velocity("registerSequence", "zoomOutDown", {
 	    "duration": 1000,
@@ -1178,6 +1275,7 @@
 	        transform: ["scale3d(0.1,0.1,0.1) translate3d(0,-1000px,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomOutDown.js.map
 
 	Velocity("registerSequence", "zoomOutLeft", {
 	    "duration": 1000,
@@ -1196,6 +1294,7 @@
 	        transformOrigin: "left center"
 	    }
 	});
+	//# sourceMappingURL=zoomOutLeft.js.map
 
 	Velocity("registerSequence", "zoomOutRight", {
 	    "duration": 1000,
@@ -1214,6 +1313,7 @@
 	        transformOrigin: "right center"
 	    }
 	});
+	//# sourceMappingURL=zoomOutRight.js.map
 
 	Velocity("registerSequence", "zoomOutUp", {
 	    "duration": 1000,
@@ -1229,6 +1329,11 @@
 	        transform: ["scale3d(0.1,0.1,0.1) translate3d(0,1000px,0)", [0.175, 0.885, 0.32, 1]]
 	    }
 	});
+	//# sourceMappingURL=zoomOutUp.js.map
+
+	//# sourceMappingURL=_all.js.map
+
+	//# sourceMappingURL=velocity.ui.js.map
 
 })));
 //# sourceMappingURL=velocity.ui.js.map
