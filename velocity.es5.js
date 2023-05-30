@@ -49,44 +49,6 @@ var defineProperty = function (obj, key, value) {
   return obj;
 };
 
-var slicedToArray = function () {
-  function sliceIterator(arr, i) {
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"]) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  return function (arr, i) {
-    if (Array.isArray(arr)) {
-      return arr;
-    } else if (Symbol.iterator in Object(arr)) {
-      return sliceIterator(arr, i);
-    } else {
-      throw new TypeError("Invalid attempt to destructure non-iterable instance");
-    }
-  };
-}();
-
 /**
  * Check if a variable is a boolean.
  */
@@ -237,6 +199,7 @@ function removeClass(element, className) {
         }
     }
 }
+//# sourceMappingURL=utility.js.map
 
 // Project
 // Constants
@@ -262,6 +225,7 @@ function registerAction(args, internal) {
     }
 }
 registerAction(["registerAction", registerAction], true);
+//# sourceMappingURL=actions.js.map
 
 /**
  * Without this it will only un-prefix properties that have a valid "normal"
@@ -289,6 +253,7 @@ var Duration = {
   normal: DURATION_NORMAL,
   slow: DURATION_SLOW
 };
+//# sourceMappingURL=constants.js.map
 
 // Project
 // Constants
@@ -334,6 +299,7 @@ function springEasing(percentComplete, startValue, endValue) {
 registerEasing(["linear", linearEasing]);
 registerEasing(["swing", swingEasing]);
 registerEasing(["spring", springEasing]);
+//# sourceMappingURL=easings.js.map
 
 // Project
 /**
@@ -499,6 +465,7 @@ registerEasing(["easeInOutExpo", generateBezier(1, 0, 0, 1)]);
 registerEasing(["easeInCirc", generateBezier(0.6, 0.04, 0.98, 0.335)]);
 registerEasing(["easeOutCirc", generateBezier(0.075, 0.82, 0.165, 1)]);
 registerEasing(["easeInOutCirc", generateBezier(0.785, 0.135, 0.15, 0.86)]);
+//# sourceMappingURL=bezier.js.map
 
 /* Runge-Kutta spring physics function generator. Adapted from Framer.js, copyright Koen Bok. MIT License: http://en.wikipedia.org/wiki/MIT_License */
 /* Given a tension, friction, and duration, a simulation at 60FPS will first run without a defined duration in order to calculate the full path. A second pass
@@ -578,6 +545,7 @@ function generateSpringRK4(tension, friction, duration) {
         return startValue + path[Math.floor(percentComplete * (path.length - 1))] * (endValue - startValue);
     };
 }
+//# sourceMappingURL=spring_rk4.js.map
 
 // Constants
 var cache = {};
@@ -596,6 +564,7 @@ function generateStep(steps) {
         return startValue + Math.round(percentComplete * steps) * (1 / steps) * (endValue - startValue);
     };
 }
+//# sourceMappingURL=step.js.map
 
 // Project
 /**
@@ -824,6 +793,7 @@ function validateSync(value) {
         console.error("VelocityJS: Trying to set 'sync' to an invalid value:", value);
     }
 }
+//# sourceMappingURL=options.js.map
 
 // Project
 // NOTE: Add the variable here, then add the default state in "reset" below.
@@ -1080,6 +1050,7 @@ var constructors = [];
  * name - saves expensive lookups.
  */
 var constructorCache = new Map();
+//# sourceMappingURL=normalizationsObject.js.map
 
 // Project
 // Constants
@@ -1121,6 +1092,7 @@ function Data(element) {
     });
     return newData;
 }
+//# sourceMappingURL=data.js.map
 
 // Constants
 var isClient = window && window === window.window,
@@ -1140,6 +1112,7 @@ var State = {
     last: undefined,
     firstNew: undefined
 };
+//# sourceMappingURL=state.js.map
 
 // Project
 /**
@@ -1254,6 +1227,7 @@ function freeAnimationCall(animation) {
         }
     }
 }
+//# sourceMappingURL=queue.js.map
 
 /**
  * Cache every camelCase match to avoid repeating lookups.
@@ -1273,6 +1247,7 @@ function camelCase(property) {
     return letter.toUpperCase();
   });
 }
+//# sourceMappingURL=camelCase.js.map
 
 // Project
 /**
@@ -1389,8 +1364,10 @@ function getNormalization(element, propertyName) {
 }
 registerAction(["registerNormalization", registerNormalization]);
 registerAction(["hasNormalization", hasNormalization]);
+//# sourceMappingURL=normalizations.js.map
 
 var SequencesObject = {};
+//# sourceMappingURL=sequencesObject.js.map
 
 // Constants
 var rxColor6 = /#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/gi,
@@ -1426,6 +1403,7 @@ function fixColors(str) {
         return "rgba(" + ($2.replace(rxSpaces, "") + ($1 ? "" : ",1")) + ")";
     });
 }
+//# sourceMappingURL=fixColors.js.map
 
 // Project
 /**
@@ -1472,24 +1450,13 @@ function augmentDimension(element, name, wantInner) {
     }
     return 0;
 }
+//# sourceMappingURL=augmentDimension.js.map
 
 // Project
-function fixNullValue(propertyValue, name) {
-    var pValue = propertyValue;
-    var re = new RegExp(name + "\\(([^)]+)\\)");
-
-    var _ref = propertyValue.match(re) || [],
-        _ref2 = slicedToArray(_ref, 2),
-        _ref2$ = _ref2[1],
-        values = _ref2$ === undefined ? "" : _ref2$;
-
-    if (values) {
-        var value = values.split(",").map(function (i) {
-            return i === "" ? 0 : i;
-        }).join(",");
-        pValue = name + "(" + value + ")";
-    }
-    return pValue;
+function fixNullValue(propertyValue) {
+    return propertyValue.trim().replace(/,\)/g, ',0)').replace(/\(,/g, '(0,').split(',').map(function (val) {
+        return val === '' ? '0' : val;
+    }).join(',');
 }
 /**
  * The singular setPropertyValue, which routes the logic for all
@@ -1497,15 +1464,7 @@ function fixNullValue(propertyValue, name) {
  */
 function setPropertyValue(element, propertyName, propertyValue, fn) {
     // FIX: value is translate3d(x,,) is not valid transform value
-    var pValue = propertyValue;
-    if (propertyName === "transform") {
-        if (propertyValue.includes("rotate")) {
-            pValue = fixNullValue(propertyValue, "rotate3d");
-        } else if (propertyValue.includes("translate")) {
-            pValue = fixNullValue(propertyValue, "translate3d");
-        }
-    }
-    console.log({ value: propertyValue, name: propertyName, pValue: pValue });
+    var pValue = fixNullValue(propertyValue);
     var noCache = NoCacheNormalizations.has(propertyName),
         data = !noCache && Data(element);
     if (noCache || data && data.cache[propertyName] !== propertyValue) {
@@ -1624,6 +1583,7 @@ function getPropertyValue(element, propertyName, fn, skipCache) {
     }
     return propertyValue;
 }
+//# sourceMappingURL=getPropertyValue.js.map
 
 // Project
 // Constants
@@ -2234,6 +2194,7 @@ function registerSequence(args) {
     }
 }
 registerAction(["registerSequence", registerSequence], true);
+//# sourceMappingURL=sequences.js.map
 
 // Project
 /**
@@ -2333,6 +2294,7 @@ function completeCall(activeCall) {
         freeAnimationCall(activeCall);
     }
 }
+//# sourceMappingURL=complete.js.map
 
 /**
  * Remove nested `calc(0px + *)` or `calc(* + (0px + *))` correctly.
@@ -2361,6 +2323,7 @@ function removeNestedCalc(value) {
     }
     return value;
 }
+//# sourceMappingURL=removeNestedCalc.js.map
 
 // Project
 /**
@@ -2801,6 +2764,7 @@ function tick(timestamp) {
     }
     ticking = false;
 }
+//# sourceMappingURL=tick.js.map
 
 // Project
 var globalPromise = void 0;
@@ -3214,6 +3178,7 @@ function optionCallback(fn, element, index, length, elements, option) {
         console.error("VelocityJS: Exception when calling '" + option + "' callback:", e);
     }
 }
+//# sourceMappingURL=velocityFn.js.map
 
 // Project
 /**
@@ -3232,6 +3197,7 @@ function patch(proto, global) {
         console.warn("VelocityJS: Error when trying to add prototype.", e);
     }
 }
+//# sourceMappingURL=patch.js.map
 
 // Project
 /**
@@ -3342,6 +3308,7 @@ function finish(args, elements, promiseHandler) {
     }
 }
 registerAction(["finish", finish], true);
+//# sourceMappingURL=finish.js.map
 
 /**
  * Used to map getters for the various AnimationFlags.
@@ -3534,6 +3501,7 @@ function option(args, elements, promiseHandler, action) {
     }
 }
 registerAction(["option", option], true);
+//# sourceMappingURL=option.js.map
 
 // Project
 /**
@@ -3602,6 +3570,7 @@ function pauseResume(args, elements, promiseHandler, action) {
 }
 registerAction(["pause", pauseResume], true);
 registerAction(["resume", pauseResume], true);
+//# sourceMappingURL=pauseResume.js.map
 
 // Project
 /**
@@ -3829,6 +3798,7 @@ registerAction(["reverse", function (args, elements, promiseHandler, action) {
         // NOTE: Code needs to split out before here - but this is needed to prevent it being overridden
         throw new SyntaxError("VelocityJS: The 'reverse' action is built in and private.");
 }], true);
+//# sourceMappingURL=reverse.js.map
 
 // Project
 /**
@@ -3909,9 +3879,11 @@ function stop(args, elements, promiseHandler, action) {
     }
 }
 registerAction(["stop", stop], true);
+//# sourceMappingURL=stop.js.map
 
 // Project
 registerAction(["style", propertyAction], true);
+//# sourceMappingURL=style.js.map
 
 // Project
 /**
@@ -4031,6 +4003,8 @@ function tweenAction(args, elements, promiseHandler, action) {
     return result;
 }
 registerAction(["tween", tweenAction], true);
+
+//# sourceMappingURL=_all.js.map
 
 // Project
 /**
@@ -4192,6 +4166,9 @@ for (var name in colorValues) {
         ColorNames[name] = Math.floor(color / 65536) + "," + Math.floor(color / 256 % 256) + "," + color % 256;
     }
 }
+//# sourceMappingURL=colors.js.map
+
+//# sourceMappingURL=_all.js.map
 
 // Project
 function registerBackIn(name, amount) {
@@ -4233,6 +4210,7 @@ registerBackIn("easeInBack", 1.7);
 registerBackOut("easeOutBack", 1.7);
 registerBackInOut("easeInOutBack", 1.7);
 // TODO: Expose these as actions to register custom easings?
+//# sourceMappingURL=back.js.map
 
 // Project
 function easeOutBouncePercent(percentComplete) {
@@ -4280,6 +4258,7 @@ function easeInOutBounce(percentComplete, startValue, endValue) {
 registerEasing(["easeInBounce", easeInBounce]);
 registerEasing(["easeOutBounce", easeOutBounce]);
 registerEasing(["easeInOutBounce", easeInOutBounce]);
+//# sourceMappingURL=bounce.js.map
 
 // Project
 // Constants
@@ -4323,6 +4302,7 @@ registerElasticIn("easeInElastic", 1, 0.3);
 registerElasticOut("easeOutElastic", 1, 0.3);
 registerElasticInOut("easeInOutElastic", 1, 0.3 * 1.5);
 // TODO: Expose these as actions to register custom easings?
+//# sourceMappingURL=elastic.js.map
 
 // Project
 /**
@@ -4348,6 +4328,9 @@ function atEnd(percentComplete, startValue, endValue) {
 registerEasing(["at-start", atStart]);
 registerEasing(["during", during]);
 registerEasing(["at-end", atEnd]);
+//# sourceMappingURL=string.js.map
+
+//# sourceMappingURL=_all.js.map
 
 // Project
 /**
@@ -4365,6 +4348,7 @@ registerNormalization(["Element", "innerWidth", getDimension("width", true)]);
 registerNormalization(["Element", "innerHeight", getDimension("height", true)]);
 registerNormalization(["Element", "outerWidth", getDimension("width", false)]);
 registerNormalization(["Element", "outerHeight", getDimension("height", false)]);
+//# sourceMappingURL=dimensions.js.map
 
 // Project
 // Constants
@@ -4402,6 +4386,7 @@ function display(element, propertyValue) {
     style.display = propertyValue;
 }
 registerNormalization(["Element", "display", display]);
+//# sourceMappingURL=display.js.map
 
 // Project
 function clientWidth(element, propertyValue) {
@@ -4454,6 +4439,7 @@ registerNormalization(["HTMLElement", "scrollWidth", scrollWidth]);
 registerNormalization(["HTMLElement", "clientWidth", clientWidth]);
 registerNormalization(["HTMLElement", "scrollHeight", scrollHeight]);
 registerNormalization(["HTMLElement", "clientHeight", clientHeight]);
+//# sourceMappingURL=scroll.js.map
 
 // Project
 /**
@@ -4565,6 +4551,7 @@ if (prefixElement) {
         }
     }
 }
+//# sourceMappingURL=style.js.map
 
 // Project
 /**
@@ -4602,6 +4589,7 @@ Object.getOwnPropertyNames(window).forEach(function (property) {
         }
     }
 });
+//# sourceMappingURL=attributes.js.map
 
 // Project
 /**
@@ -4622,6 +4610,9 @@ function getDimension$1(name) {
 }
 registerNormalization(["SVGElement", "width", getDimension$1("width")]);
 registerNormalization(["SVGElement", "height", getDimension$1("height")]);
+//# sourceMappingURL=dimensions.js.map
+
+//# sourceMappingURL=_all.js.map
 
 // Project
 /**
@@ -4633,9 +4624,15 @@ function getSetTween(element, propertyValue) {
     }
 }
 registerNormalization(["Element", "tween", getSetTween]);
+//# sourceMappingURL=tween.js.map
+
+//# sourceMappingURL=_all.js.map
+
+//# sourceMappingURL=_all.js.map
 
 // Automatically generated
 var VERSION = "2.0.6";
+//# sourceMappingURL=version.js.map
 
 // Project
 var Velocity$1 = Velocity;

@@ -13,18 +13,14 @@ import {Data} from "../data";
 import {getNormalization} from "../normalizations/normalizations";
 import {NoCacheNormalizations} from "../normalizations/normalizationsObject";
 
-function fixNullValue(propertyValue, name) {
-  let pValue = propertyValue;
-  const re = new RegExp(`${name}\\(([^\)]+)\\)`);
-  const [, values = ""] = propertyValue.match(re) || [];
-  if (values) {
-    const value = values.split(",")
-      .map((i) => i === "" ? 0 : i)
-      .join(",");
-    pValue = `${name}(${value})`;
-  }
-
-  return pValue;
+function fixNullValue(propertyValue) {
+  return propertyValue
+    .trim()
+    .replace(/,\)/g, ',0)')
+    .replace(/\(,/g, '(0,')
+    .split(',')
+    .map(val => val === '' ? '0' : val)
+    .join(',')
 }
 
 /**
@@ -34,16 +30,8 @@ function fixNullValue(propertyValue, name) {
 export function setPropertyValue(element: HTMLorSVGElement, propertyName: string, propertyValue: any, fn?: VelocityNormalizationsFn) {
 
   // FIX: value is translate3d(x,,) is not valid transform value
-  let pValue  = propertyValue;
-  if (propertyName === "transform") {
-    if (propertyValue.includes("rotate")) {
-      pValue = fixNullValue(propertyValue, "rotate3d");
-    } else if (propertyValue.includes("translate")) {
-      pValue = fixNullValue(propertyValue, "translate3d");
-    }
-  }
+  const pValue  = fixNullValue(propertyValue);
 
-  console.log({ value: propertyValue, name: propertyName, pValue });
 	const noCache = NoCacheNormalizations.has(propertyName),
         data    = !noCache && Data(element);
 
