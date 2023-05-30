@@ -16,11 +16,11 @@ import {NoCacheNormalizations} from "../normalizations/normalizationsObject";
 function fixNullValue(propertyValue) {
   return propertyValue
     .trim()
-    .replace(/,\)/g, ',0)')
-    .replace(/\(,/g, '(0,')
-    .split(',')
-    .map(val => val === '' ? '0' : val)
-    .join(',')
+    .replace(/,\)/g, ",0)")
+    .replace(/\(,/g, "(0,")
+    .split(",")
+    .map((val) => val === "" ? "0" : val)
+    .join(",");
 }
 
 /**
