@@ -4583,7 +4583,7 @@
   registerNormalization(["Element", "tween", getSetTween]);
 
   // Automatically generated
-  var VERSION = "2.0.9";
+  var VERSION = "2.0.10";
 
   // Project
   var Velocity$1 = Velocity;

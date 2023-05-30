@@ -112,13 +112,13 @@ if (hasBuild || hasMinify) {
 		]
 	}, {
 		input: "src-ui/velocity.ui.ts",
-		external: ["velocity-animate"],
+		external: ["aftt-velocity-animate"],
 		output: [{
 				file: pkg.main.replace(".min", ".ui"),
 				format: "umd",
 				sourcemap: true,
 				globals: {
-					"velocity-animate": "Velocity"
+					"aftt-velocity-animate": "Velocity"
 				}
 			}],
 		watch: {
@@ -146,13 +146,13 @@ if (hasBuild || hasMinify) {
 			]
 		}, {
 			input: "src-ui/velocity.ui.ts",
-			external: ["velocity-animate"],
+			external: ["aftt-velocity-animate"],
 			output: [{
 					file: pkg.main.replace(".min", ".ui.min"),
 					format: "umd",
 					sourcemap: false,
 					globals: {
-						"velocity-animate": "Velocity"
+						"aftt-velocity-animate": "Velocity"
 					}
 				}],
 			plugins: [
@@ -165,14 +165,14 @@ if (hasBuild || hasMinify) {
 if (hasTest) {
 	tasks.push({
 		input: "test/src/test.ts",
-		external: ["qunit", "velocity-animate"],
+		external: ["qunit", "aftt-velocity-animate"],
 		context: "window",
 		output: [{
 				file: "test/test.js",
 				format: "umd",
 				sourcemap: true,
 				globals: {
-					"velocity-animate": "Velocity",
+					"aftt-velocity-animate": "Velocity",
 					"qunit": "QUnit"
 				}
 			}],

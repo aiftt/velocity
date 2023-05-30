@@ -1,6 +1,6 @@
 {
   "name": "aftt-velocity-animate",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Accelerated JavaScript animation.",
   "keywords": [
     "velocity",
@@ -28,8 +28,8 @@
     }
   ],
   "scripts": {
-    "start": "rollup -w -c --environment BUILD,TEST",
-    "build": "rollup -c --environment BUILD,MINIFY,TEST",
+    "start": "rollup -w -c --environment BUILD",
+    "build": "rollup -c --environment BUILD,MINIFY",
     "lint": "tslint src/**/*.ts src-ui/**/*.ts test/src/**/*.ts",
     "test": "rollup -c --environment TEST",
     "version": "npm run build && auto-changelog && git add ."
@@ -71,6 +71,6 @@
     "rollup-plugin-uglify": "^4.0.0",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1",
-    "velocity-animate": "file:./"
+    "aftt-velocity-animate": "file:./"
   }
 }

@@ -5,8 +5,8 @@
  */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('velocity-animate')) :
-	typeof define === 'function' && define.amd ? define(['velocity-animate'], factory) :
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('aftt-velocity-animate')) :
+	typeof define === 'function' && define.amd ? define(['aftt-velocity-animate'], factory) :
 	(factory(global.Velocity));
 }(this, (function (Velocity) { 'use strict';
 

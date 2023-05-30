@@ -6,7 +6,7 @@
  * Based on animate.css: https://github.com/daneden/animate.css
  */
 
-import Velocity from "velocity-animate";
+import Velocity from "aftt-velocity-animate";
 
 Velocity("registerSequence", "zoomOutLeft", {
 	"duration": 1000,
